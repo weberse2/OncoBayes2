@@ -38,7 +38,7 @@ jobs:
           extra-packages: any::pkgdown, local::.
           needs: website
           cache: true
-          cache-version: 1
+          cache-version: 2
           upgrade: 'TRUE'
 
 # cmdstan is not used for building the web-site

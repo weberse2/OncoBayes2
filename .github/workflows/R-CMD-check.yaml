@@ -52,13 +52,15 @@ jobs:
           use-public-rspm: true
           extra-repositories: 'https://mc-stan.org/r-packages/'
           Ncpus: 4
-          rtools-version: '45'
           update-rtools: true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
           needs: check
+          cache: true
+          cache-version: 2
+          upgrade: 'TRUE'
 
       - name: Install CmdStan
         shell: Rscript {0}
