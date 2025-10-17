@@ -85,11 +85,12 @@ the stratum "all" whenever no stratum is assigned for a group.
 
 ```{r, message = FALSE}
 ## Load involved packages
-library(RBesT)   ## used to define priors
-library(dplyr)   ## for mutate
-library(tidyr)   ## defines expand_grid
-library(tibble)  ## for tibbles
-library(ggplot2) ## for plotting
+library(RBesT)        ## used to define priors
+library(OncoBayes2)   ## working horse
+library(dplyr)        ## for mutate
+library(tidyr)        ## defines expand_grid
+library(tibble)       ## for tibbles
+library(ggplot2)      ## for plotting
 ```
 
 ## Example use-case: Dual combination trial with historical information

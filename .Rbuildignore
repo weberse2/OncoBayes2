@@ -35,3 +35,4 @@
 ^src/package-binary$
 ^Makefile$
 ^\.github$
+^codecov\.yml$
