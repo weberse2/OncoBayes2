@@ -12,3 +12,8 @@ To get a quick overview over the package functionality, please refer
 to the introductory
 [vignette](articles/index.html).
 
+
+
+<!-- badges: start -->
+	[![Codecov test coverage](https://codecov.io/gh/weberse2/OncoBayes2/graph/badge.svg)](https://app.codecov.io/gh/weberse2/OncoBayes2)
+<!-- badges: end -->
