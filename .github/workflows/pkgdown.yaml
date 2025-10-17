@@ -41,11 +41,12 @@ jobs:
           cache-version: 1
           upgrade: 'TRUE'
 
-      - name: Install CmdStan
-        shell: Rscript {0}
-        run: |
-          cmdstanr::check_cmdstan_toolchain(fix = TRUE)
-          cmdstanr::install_cmdstan(version = "2.36.0", cores=4)
+# cmdstan is not used for building the web-site
+#      - name: Install CmdStan
+#        shell: Rscript {0}
+#        run: |
+#          cmdstanr::check_cmdstan_toolchain(fix = TRUE)
+#          cmdstanr::install_cmdstan(version = "2.36.0", cores=4)
 
       - name: Build site
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
