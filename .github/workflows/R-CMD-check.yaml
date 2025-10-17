@@ -63,7 +63,6 @@ jobs:
       - name: Install CmdStan
         shell: Rscript {0}
         run: |
-          cmdstanr::check_cmdstan_toolchain(fix = TRUE)
           cmdstanr::install_cmdstan(version = "2.36.0", cores=4)
 
       - uses: r-lib/actions/check-r-package@v2
