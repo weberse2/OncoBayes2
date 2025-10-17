@@ -1,0 +1,1330 @@
+#' @title Dose-Escalation Trials guided by Bayesian Logistic Regression Model
+#'
+#' @description `blrm_trial` facilitates the conduct of dose
+#'     escalation studies guided by Bayesian Logistic Regression
+#'     Models (BLRM). While the `blrm_exnex` only fits the BLRM
+#'     model to data, the `blrm_trial` function standardizes the
+#'     specification of the entire trial design and provides various
+#'     standardized functions for trial data accrual and derivation of
+#'     model summaries needed for dose-escalation decisions.
+#'
+#' @param data dose-toxicity data available at design stage of trial
+#'
+#' @param dose_info specificaion of the dose levels as
+#'     planned for the ongoing trial arms.
+#'
+#' @param drug_info specification of drugs used in trial arms.
+#'
+#' @param simplified_prior logical (defaults to `FALSE`)
+#'     indicating whether a simplified prior should be employed based
+#'     on the `reference_p_dlt` values provided in
+#'     `drug_info`. **Warning:** The simplified prior will
+#'     change between releases. Please read instructions below in the
+#'     respective section for the simplified prior.
+#'
+#' @param EXNEX_comp logical (default to `TRUE`) indicating
+#'     whether EXchangeable-NonEXchangeable priors should be employed
+#'     for all component parameters
+#'
+#' @param EX_prob_comp_hist prior weight (\eqn{[0,1]}, default to 1)
+#'     on exchangeability for the component parameters in groups
+#'     representing historical data
+#'
+#' @param EX_prob_comp_new prior weight (\eqn{[0,1]}, default to 0.8)
+#'     on exchangeability for the component parameters in groups
+#'     representing new or concurrent data
+#'
+#' @param EXNEX_inter logical (default to `FALSE`) indicating
+#'     whether EXchangeable-NonEXchangeable priors should be employed
+#'     for all interaction parameters
+#'
+#' @param EX_prob_inter prior weight (\eqn{[0,1]}, defaults to 0.8) on
+#'     exchangeability for the interaction parameters
+#'
+#' @param formula_generator formula generation function (see for
+#'     example `blrm_formula_linear` or
+#'     `blrm_formula_saturating`). The formula generator
+#'     defines the employed interaction model.
+#'
+#' @param interval_prob defines the interval probabilities reported in
+#'     the standard outputs. Defaults to `c(0, 0.16, 0.33, 1)`.
+#'
+#' @param interval_max_mass named vector defining for each interval of
+#'     the `interval_prob` vector a maxmimal admissable
+#'     probability mass for a given dose level. Whenever the posterior
+#'     probability mass in a given interval exceeds the threshold,
+#'     then the Escalation With Overdose Control (EWOC) criterion is
+#'     considered to be not fullfilled. Dose levels not fullfilling
+#'     EWOC are ineligible for the next cohort of patients. The
+#'     default restricts the overdose probability to less than 0.25.
+#'
+#' @param ... Additional arguments are forwarded to `blrm_exnex`,
+#'     i.e. for the purpose of prior specification.
+#' @param x `blrm_trial` object to print
+#'
+#' @details `blrm_trial` constructs an object of class
+#'     `blrm_trial` which stores the compelte information about
+#'     the study design of a dose-escalation trial. The study design
+#'     is defined through the data sets (see sections below for a
+#'     definition of the columns):
+#'
+#' \describe{
+#'
+#' \item{data (historical data)}{The `data` argument defines
+#' available dose-toxicity data at the design stage of the
+#' trial. Together with the prior of model (without any data) this
+#' defines the prior used for the trial conduct.}
+#'
+#' \item{dose_info}{Definition of the pre-specified dose levels
+#' explored in the ongoing trial arms. Thus, all dose-toxcitiy trial
+#' data added to the object is expected correspond to one of the dose
+#' levels in the pre-defined set of dose_info.}
+#'
+#' \item{drug_info}{Determines the drugs used in the trial, their
+#' units, reference dose level and optionally defines the expected
+#' probability for a toxicity at the reference dose.}
+#'
+#' }
+#'
+#' Once the `blrm_trial` object is setup the complete trial
+#' design is specified and the model is fitted to the given
+#' `data`. This allows evaluation of the pre-specified dose
+#' levels of the trial design wrt. to safety, i.e. whether the
+#' starting dose of the trial fullfills the escalate with overdose
+#' criterion (EWOC) condition.
+#'
+#' The `blrm_trial` trial can also be constructed in a 2-step
+#' process which allows for a more convenient specification of the
+#' prior since meta data like number of drugs and the like can be
+#' used. See the example section for details.
+#'
+#' After setup of the initial `blrm_trial` object additional data
+#' is added through the use of the `update` method which has a
+#' `add_data` argument intended to add data from the ongoing
+#' trial. The `summary` function finally allows to extract
+#' various model summaries. In particular, the EWOC criterion can be
+#' calculated for the pre-defined dose levels of the trial.
+#'
+#' @section Simplified prior:
+#'
+#' As a convenience for the user, a simplified prior can be specifed
+#' whenever the `reference_p_dlt` column is present in the
+#' `drug_info` data set. However, the user is **warned**
+#' that the simplified prior will change in future releases of the
+#' package and thus **we strongly discourage the use of the
+#' simplified prior for setting up trial designs**. The functionality
+#' is intended to provide the user a quick start and as a starting
+#' point. The actually instantiated prior can be seen as demonstrated
+#' below in the examples.
+#'
+#' @section Input data:
+#'
+#' The data given to the `data` argument of `blrm_trial` is
+#' considered as the available at design stage of the trial. The
+#' collected input data thus does not necessarily need to have the
+#' same dose levels as the pre-specified dose_info for the
+#' ongoing trial(s). It's data columns must include, but are not
+#' limited to:
+#'
+#' \describe{
+#'   \item{group_id}{study}
+#'
+#'   \item{stratum_id}{optional, only required for differential discounting of groups}
+#'
+#'   \item{num_patients}{number of patients}
+#'
+#'   \item{num_toxicities}{number of toxicities}
+#'
+#'   \item{drug_A}{Columns for the dose of each treatment component,
+#'   with column names matching the `drug_name` values specified
+#'   in the `drug_info` argument of `blrm_trial`}
+#'
+#' }
+#'
+#' @section Drug info data:
+#'
+#' The drug information data-set defines drug properties. The fields
+#' included are:
+#'
+#' \describe{
+#'   \item{drug_name}{name of drug which is also used as column name for the dose}
+#'   \item{dose_ref}{reference dose}
+#'   \item{dose_unit}{units used for drug amounts}
+#'   \item{reference_p_dlt}{optional; if provided, allows setup of a simplified prior}
+#' }
+#'
+#' @section Dose info data:
+#'
+#' The `drug_info` data-set pre-specifies the dose levels of the
+#' ongoing trial. Thus, all data added to the `blrm_trial`
+#' through the `update` command must be consistent with the
+#' pre-defined dose levels as no other than those pre-specified ones
+#' can be explored in an ongoing trial.
+#'
+#' \describe{
+#'
+#' \item{dose_id}{optional column which assigns a unique id to each
+#' group_id/dose combination. If not specified the column is
+#' internally generated.}
+#'
+#' \item{group_id}{study}
+#'
+#' \item{drug_A}{Columns for the dose of each treatment component,
+#'   with column names matching the `drug_name` values specified
+#'   in the `drug_info` argument of `blrm_trial`}
+#'
+#' }
+#'
+#' @return The function returns an object of class `blrm_trial`.
+#'
+#' @family blrm_trial combo2 example
+#'
+#' @template ref-babb_ewoc
+#' @template ref-mac
+#'
+#' @template start-example
+#' @examples
+#'
+#' # construct initial blrm_trial object from built-in example datasets
+#' combo2_trial_setup <- blrm_trial(
+#'   data = hist_combo2,
+#'   dose_info = dose_info_combo2,
+#'   drug_info = drug_info_combo2,
+#'   simplified_prior = TRUE
+#' )
+#'
+#' # extract blrm_call to see setup of the prior as passed to blrm_exnex
+#' summary(combo2_trial_setup, "blrm_exnex_call")
+#'
+#' # Warning: The simplified prior will change between releases!
+#' # please refer to the combo2_trial example for a complete
+#' # example. You can obtain this example with
+#' # ?example-combo2_trial
+#' # or by running
+#' # example_model("combo2_trial")
+#'
+#' @template stop-example
+#'
+#' @export
+blrm_trial <- function(
+  data,
+  dose_info,
+  drug_info,
+  simplified_prior = FALSE,
+  EXNEX_comp = FALSE,
+  EX_prob_comp_hist = 1,
+  EX_prob_comp_new = 0.8,
+  EXNEX_inter = FALSE,
+  EX_prob_inter = 1,
+  formula_generator = blrm_formula_saturating,
+  interval_prob = c(0, 0.16, 0.33, 1),
+  interval_max_mass = c(
+    prob_underdose = 1,
+    prob_target = 1,
+    prob_overdose = 0.25
+  ),
+  ...
+) {
+  trial <- list()
+
+  # Prevent factor nonsense - enforce tibbles
+  # assert_tibble(dose_info)
+  assert_tibble(drug_info)
+
+  assert_names(
+    colnames(drug_info),
+    must.include = c("drug_name", "dose_ref", "dose_unit")
+  )
+
+  # Assign drug names and reference doses
+  assert_that(nrow(drug_info) > 0, msg = "At least one drug must be defined")
+
+  trial$ref_doses <- drug_info$dose_ref
+  names(trial$ref_doses) <- drug_info$drug_name
+
+  trial$dose_units <- drug_info$dose_unit
+  trial$drug_info <- drug_info
+
+  # Check dose_info
+  dose_info <- .sanitize_dose_info(trial, dose_info)
+
+  # Check data at t = 0
+  if (is.null(data)) {
+    list_args <- list()
+
+    if (!is.factor(dose_info[["stratum_id"]])) {
+      dose_info[["stratum_id"]] <- factor(dose_info[["stratum_id"]])
+    }
+    list_args[["stratum_id"]] <- dose_info[["stratum_id"]][0]
+
+    if (!is.factor(dose_info[["group_id"]])) {
+      dose_info[["group_id"]] <- factor(dose_info[["group_id"]])
+    }
+    list_args[["group_id"]] <- dose_info[["group_id"]][0]
+
+    list_args[["num_patients"]] <- numeric(0)
+    list_args[["num_toxicities"]] <- numeric(0)
+
+    for (drug_name in drug_info$drug_name) {
+      list_args[[drug_name]] <- numeric(0)
+    }
+
+    list_args[["cohort_time"]] <- numeric(0)
+
+    ## Make sure dose_id is an integer column
+    list_args[["dose_id"]] <- integer(0) * NA
+
+    data <- do.call("tibble", args = list_args)
+  }
+
+  assert_tibble(data)
+
+  # If no stratum is assigned, assign a single one
+  if (!has_name(data, "stratum_id")) {
+    data[["stratum_id"]] <- "all"
+  }
+
+  # If no historic data state is assigned, assign all given data to be historic
+  # (= cohort time 0)
+  if (!has_name(data, "cohort_time")) {
+    data[["cohort_time"]] <- 0
+  }
+
+  assert_that(has_name(data, "stratum_id"))
+  assert_that(has_name(data, "group_id"))
+  assert_that(has_name(data, "num_patients"))
+  assert_that(has_name(data, "num_toxicities"))
+
+  # Data must have columns that correspond to drug name
+  assert_that(
+    has_name(data, trial$drug_info$drug_name),
+    msg = "Data must use same drug names as specified in drug_info"
+  )
+
+  # Define helper functions
+  merge_to_factor_levels <- function(df_1, df_2, variable_name) {
+    if (
+      is.factor(df_1[[variable_name]][0]) && is.factor(df_2[[variable_name]][0])
+    ) {
+      assert_that(
+        nlevels(df_1[[variable_name]][0]) ==
+          nlevels(df_2[[variable_name]][0]) &&
+          all(
+            levels(df_1[[variable_name]][0]) == levels(df_2[[variable_name]][0])
+          ),
+        msg = paste0(
+          "Factor levels in variable \"",
+          variable_name,
+          "\" inconsistent."
+        )
+      )
+      all_factor_levels <- levels(df_1[[variable_name]][0])
+    } else {
+      if (
+        is.factor(df_1[[variable_name]][0]) ||
+          is.factor(df_2[[variable_name]][0])
+      ) {
+        warning(paste0(
+          'Merging character and factor definition for "',
+          variable_name,
+          '"'
+        ))
+        if (is.factor(df_1[[variable_name]][0])) {
+          all_level_strings <- levels(df_1[[variable_name]][0])
+          assert_that(
+            all(df_2[[variable_name]] %in% all_level_strings),
+            msg = paste0('Missing levels in factor "', variable_name, '"')
+          )
+        } else {
+          all_level_strings <- levels(df_2[[variable_name]][0])
+          assert_that(
+            all(df_1[[variable_name]] %in% all_level_strings),
+            msg = paste0('Missing levels in factor "', variable_name, '"')
+          )
+        }
+
+        all_factor_levels <- factor(
+          all_level_strings,
+          levels = all_level_strings
+        )
+      } else {
+        all_level_df <- unique(
+          bind_rows(
+            dplyr::select(df_1, variable_name),
+            dplyr::select(df_2, variable_name)
+          )
+        )
+        all_level_strings <- all_level_df[[variable_name]]
+
+        all_factor_levels <- factor(
+          all_level_strings,
+          levels = all_level_strings
+        )
+      }
+    }
+
+    all_factor_levels
+  }
+
+  apply_factor_levels_to_variable <- function(
+    df,
+    variable_name,
+    factor_levels
+  ) {
+    df[[variable_name]] <- factor(df[[variable_name]], levels = factor_levels)
+
+    df
+  }
+
+  # Apply consistent group_id and stratum_id factor levels to all data
+  for (variable_name in c("group_id", "stratum_id")) {
+    all_factor_levels <- merge_to_factor_levels(data, dose_info, variable_name)
+
+    data <- apply_factor_levels_to_variable(
+      data,
+      variable_name,
+      all_factor_levels
+    )
+    dose_info <- apply_factor_levels_to_variable(
+      dose_info,
+      variable_name,
+      all_factor_levels
+    )
+  }
+
+  # Assign data & dose_info
+  trial$dose_info <- dose_info
+  trial$group_to_stratum_mapping <- .create_group_to_stratum_mapping(
+    dose_info = dose_info,
+    data = data,
+    drug_names = trial$drug_info$drug_name
+  )
+  trial$data <- data
+
+  # Save group and stratum factor levels
+  trial$group_id_factor <- trial$data[["group_id"]][0]
+  trial$stratum_id_factor <- trial$data[["stratum_id"]][0]
+
+  trial$data <- .blrm_trial_sanitize_data(
+    trial,
+    trial$data,
+    trial_is_being_constructed = TRUE, # Do not test for blrm_trial object yet
+    warning_if_dose_not_prespecified = FALSE # Hist data does not need to be pre-specified
+  )
+
+  # Create formula for individual components
+  assert_class(formula_generator, "function")
+
+  trial$formula <- formula_generator(ref_doses = trial$ref_doses)
+  assert_class(trial$formula, "blrm_formula")
+
+  # Compute dimensionality of data and problem
+  trial$num_components <- trial$formula$num_components
+  trial$num_interaction_terms <- trial$formula$num_interaction_terms
+  trial$num_strata <- nlevels(trial$stratum_id_factor)
+  trial$num_groups <- nlevels(trial$group_id_factor)
+  trial$num_groups_hist <- length(unique(trial$data[["group_id"]]))
+  trial$num_groups_current <- length(unique(trial$dose_info[["group_id"]]))
+
+  # Sanity check thresholds for EWOC
+  assert_numeric(
+    interval_max_mass,
+    lower = 0,
+    upper = 1,
+    names = "strict",
+    any.missing = FALSE,
+    finite = TRUE
+  )
+  assert_numeric(
+    interval_prob,
+    lower = 0,
+    upper = 1,
+    sorted = TRUE,
+    any.missing = FALSE,
+    finite = TRUE
+  )
+
+  assert_that(
+    all(interval_max_mass >= 0) && all(interval_max_mass <= 1),
+    msg = "Maximum interval probability interval_max_mass must be 0 <= p <= 1"
+  )
+  assert_that(
+    all(interval_prob >= 0) &&
+      all(interval_prob <= 1) &&
+      all(diff(interval_prob) > 0),
+    msg = "interval_prob must be an ascending vector of probabilities"
+  )
+
+  trial$interval_names <- NULL
+  if (!is.null(names(interval_max_mass))) {
+    trial$interval_names <- names(interval_max_mass)
+  }
+  assert_that(
+    (length(interval_max_mass) == length(interval_prob) - 1) ||
+      (length(interval_max_mass) == 0 && length(interval_prob) == 0),
+    msg = "Inconsistent interval number and maximal interval mass. The number of intervals should be length(interval_prob) - 1, or both interval_prob and interval_max_mass be empty."
+  )
+  trial$interval_max_mass <- interval_max_mass
+
+  trial$interval_prob <- interval_prob
+
+  trial <- structure(trial, class = "blrm_trial")
+
+  if (simplified_prior) {
+    # Create simplified prior
+    assert_that(
+      "reference_p_dlt" %in% colnames(trial$drug_info),
+      msg = '"reference_p_dlt" column is required for specifying simplified prior.'
+    )
+    # Check reference dose toxicity probabilities
+    assert_that(
+      all(trial$drug_info$reference_p_dlt >= 0) &&
+        all(trial$drug_info$reference_p_dlt <= 1),
+      msg = "Reference dose DLT probability must be >= 0 and <= 1."
+    )
+
+    trial <- .blrm_trial_compute_simple_prior(
+      object = trial,
+      EXNEX_comp = EXNEX_comp,
+      EX_prob_comp_hist = EX_prob_comp_hist,
+      EX_prob_comp_new = EX_prob_comp_new,
+      EXNEX_inter = EXNEX_inter,
+      EX_prob_inter = EX_prob_inter,
+      ...
+    )
+  } else {
+    dot.args <- list(...)
+
+    if (length(dot.args) > 0) {
+      trial <- do.call(
+        ".blrm_trial_compute_prior",
+        c(list(object = trial), dot.args)
+      )
+    } else {
+      message("Please configure blrm_exnex using the update() function.")
+    }
+  }
+
+  return(trial)
+}
+
+#'
+#' @describeIn blrm_trial print function.
+#' @method print blrm_trial
+#' @export
+print.blrm_trial <- function(x, ...) {
+  .assert_is_blrm_trial(x)
+  pretty_formula <- gsub("~", "~\n", x$formula$blrm_formula)
+  pretty_formula <- gsub("\\|", "|\n", pretty_formula)
+
+  cat("Bayesian Logistic Regression Model trial with \n\n")
+
+  cat("Number of observations   :", nrow(x$data), "\n")
+  cat("Number of historic groups:", x$num_groups_hist, "\n")
+  cat("Number of trial arms     :", x$num_groups_current, "\n")
+  cat("Generated formula        :\n", pretty_formula, "\n\n")
+
+  if (length(x$interval_max_mass) > 0) {
+    cat("Toxicity intervals and EWOC requirements:\n")
+    cat("-----------------------------------------\n")
+
+    pad_to_num <- max(sapply(x$interval_prob, "nchar"))
+    if (is.null(x$interval_names)) {
+      for (i in seq_along(head(x$interval_prob, -1))) {
+        cat(paste0(
+          ifelse(i == 1, " [", " ("),
+          format(x$interval_prob[i], justify = "right", width = pad_to_num),
+          " - ",
+          format(x$interval_prob[i + 1], justify = "right", width = pad_to_num),
+          "] <= ",
+          x$interval_max_mass[i],
+          "\n"
+        ))
+      }
+    } else {
+      pad_to <- max(sapply(x$interval_names, "nchar"))
+      for (i in seq_along(head(x$interval_prob, -1))) {
+        cat(paste0(
+          format(x$interval_names[i], justify = "right", width = pad_to),
+          " (",
+          format(x$interval_prob[i], justify = "right", width = pad_to_num),
+          " - ",
+          format(x$interval_prob[i + 1], justify = "right", width = pad_to_num),
+          "] <= ",
+          x$interval_max_mass[i],
+          "\n"
+        ))
+      }
+    }
+
+    cat("\n")
+  } else {
+    cat("Toxicity intervals not defined, EWOC is always true.\n\n")
+  }
+
+  if (has_name(x, "blrmfit")) {
+    cat("blrmfit summary:\n")
+    cat(strrep("-", 80), "\n")
+
+    print(x$blrmfit)
+  } else {
+    cat("BLRM prior undefined!\n")
+  }
+
+  if (has_name(x, "ewoc_check")) {
+    .blrm_trial_ewoc_check(x, x$ewoc_check)
+  }
+}
+
+
+# Internal functions ------------------------------------------------------
+
+.blrm_trial_compute_ewoc <- function(trial, trial_est) {
+  .assert_is_blrm_trial_and_prior_is_set(trial)
+
+  trial_est_ewoc <- trial_est
+
+  if (length(trial$interval_max_mass) > 0) {
+    if (!is.null(trial$interval_names)) {
+      cols <- colnames(trial_est_ewoc)
+      cols[
+        (length(cols) - length(trial$interval_names) + 1):length(cols)
+      ] <- trial$interval_names
+      colnames(trial_est_ewoc) <- cols
+      interval_max_mass <- trial$interval_max_mass
+    } else {
+      interval_max_mass <- trial$interval_max_mass
+      names(interval_max_mass) <- paste0("I", seq(1, length(interval_max_mass)))
+    }
+    trial_est_intervals <- trial_est_ewoc[,
+      (length(colnames(trial_est_ewoc)) -
+        length(interval_max_mass) +
+        1):length(colnames(trial_est_ewoc))
+    ]
+
+    interval_max <- as_tibble(as.list(interval_max_mass))
+    interval_max <- interval_max[rep(1, times = nrow(trial_est_ewoc)), ]
+
+    if (nrow(interval_max) > 0) {
+      trial_est_ewoc$ewoc_ok <- rowSums(trial_est_intervals > interval_max) == 0
+    } else {
+      trial_est_ewoc$ewoc_ok <- logical(0)
+    }
+  } else {
+    trial_est_ewoc$ewoc_ok <- TRUE
+  }
+
+  trial_est_ewoc
+}
+
+.blrm_trial_compute_ewoc_check <- function(trial, newdata) {
+  .assert_is_blrm_trial_and_prior_is_set(trial)
+
+  if (missing(newdata)) {
+    newdata <- trial$dose_info
+  }
+
+  assert_tibble(newdata)
+
+  std_delta_crit <- function(x, qc_low, qc_high, p_max) {
+    x_in_interval <- unname(1 * ((x > qc_low) & (x <= qc_high)))
+    prob_interval <- mean(x_in_interval)
+    se_prob_interval <- mcse_mean(x_in_interval, names = FALSE)
+    stat <- unname((prob_interval - p_max) / se_prob_interval)
+    ess <- ess_mean(x_in_interval, names = FALSE)
+    rh <- posterior::rhat(x_in_interval)
+    c(
+      est = prob_interval,
+      stat = stat,
+      mcse = se_prob_interval,
+      ess = ess,
+      rhat = rh
+    )
+  }
+
+  std_delta_crit_tail <- function(x, qc, p_max, lower.tail = TRUE) {
+    if (lower.tail) {
+      p_max <- 1 - p_max
+    }
+    xc <- x - qc
+    q_est <- unname(quantile(x, p_max))
+    se_q_delta_pmax <- mcse_quantile(xc, p_max, names = FALSE)
+    stat <- unname((q_est - qc) / se_q_delta_pmax)
+    ess <- ess_quantile(xc, p_max, names = FALSE)
+    rh <- posterior::rhat(xc)
+    c(est = q_est, stat = stat, mcse = se_q_delta_pmax, ess = ess, rhat = rh)
+  }
+
+  check_fn <- list()
+  prefix_names <- function(x, prefix)
+    setNames(x, paste(prefix, names(x), sep = "_"))
+  for (i in seq_len(length(trial$interval_names))) {
+    n <- trial$interval_names[i]
+    rl <- trial$interval_prob[i]
+    rh <- trial$interval_prob[i + 1]
+    m <- trial$interval_max_mass[i]
+    ## in this case there is no restriction due to the criterion => drop
+    if (m == 1) {
+      next
+    }
+    ## cat(paste(n, "/", rl, " - ", rh, "/", m, "\n"))
+    pars <- list(rl = rl, rh = rh, m = m, n = n)
+    if (rh == 1) {
+      check_fn[[n]] <- eval(
+        substitute(function(x) {
+          prefix_names(std_delta_crit_tail(x, rl, m, TRUE), n)
+        }),
+        pars
+      )
+    } else if (rl == 0) {
+      check_fn[[n]] <- eval(
+        substitute(function(x) {
+          prefix_names(std_delta_crit_tail(x, rh, m, FALSE), n)
+        }),
+        pars
+      )
+    } else {
+      check_fn[[n]] <- eval(
+        substitute(function(x) {
+          prefix_names(std_delta_crit(x, rl, rh, m), n)
+        }),
+        pars
+      )
+    }
+  }
+
+  ## need to convert via rvar to draws matrix to have chains
+  ## property kept, see
+  ## https://github.com/stan-dev/posterior/issues/251 (should get
+  ## fixed soon)
+  post <- as_draws_matrix(rvar(
+    posterior_linpred(trial, transform = TRUE, newdata = newdata),
+    nchains = trial$blrmfit$stanfit@sim$chains
+  ))
+
+  check_sum <- summarise_draws(post, check_fn)
+  check_sum$variable <- NULL
+  ## convert to plain numeric types rather than then pillar_num from
+  ## posterior 1.4.0 (only affects formatting of numbers when
+  ## displayed)
+  check_sum <- as.data.frame(lapply(check_sum, as.numeric))
+  bind_cols(newdata, check_sum)
+}
+
+.blrm_trial_ewoc_check <- function(trial, ewoc_check) {
+  .assert_is_blrm_trial_and_prior_is_set(trial)
+
+  if (missing(ewoc_check)) {
+    ewoc_check <- trial$ewoc_check
+  }
+
+  assert_tibble(ewoc_check)
+
+  active_checks <- trial$interval_max_mass < 1
+
+  if (length(active_checks) > 0) {
+    # If there are no checks configured, skip this part
+    stat_cols <- paste(trial$interval_names[active_checks], "stat", sep = "_")
+    rhat_cols <- paste(trial$interval_names[active_checks], "rhat", sep = "_")
+
+    # warn on ewoc decisions where the 95% interval such that more
+    # iterations are needed possibly
+    imprecise_stat <- abs(ewoc_check[, stat_cols, drop = TRUE]) < qnorm(0.975)
+    # warn if some ewoc metrics have not converged
+    rhat_large <- ewoc_check[, rhat_cols, drop = TRUE] > 1.1
+
+    if (any(rhat_large, na.rm = TRUE)) {
+      warning(
+        sum(rhat_large, na.rm = TRUE),
+        " out of ",
+        length(rhat_large),
+        " ewoc metrics have not converged (some Rhats are > 1.1).\n",
+        "Be careful when analysing the results! It is recommended to run\n",
+        "more iterations and/or setting stronger priors.\n",
+        "You may call \"summary(trial, summarize='ewoc_check', ...)\" for more diagnostic details.\n",
+        "Please call \"help('blrm_trial', help_type='summary')\" for further documentation.",
+        call. = FALSE
+      )
+    }
+    if (any(imprecise_stat, na.rm = TRUE)) {
+      warning(
+        sum(imprecise_stat, na.rm = TRUE),
+        " out of ",
+        length(imprecise_stat),
+        " ewoc metrics are within the 95% MCMC error of the decision boundary.\n",
+        "Be careful when using the imprecise ewoc estimates! It is recommended to run\n",
+        "more iterations and review doses close to critical thresholds.\n",
+        "You may call \"summary(trial, summarize='ewoc_check', ...)\" for more diagnostic details.\n",
+        "Please call \"help('blrm_trial', help_type='summary')\" for further documentation.",
+        call. = FALSE
+      )
+    }
+  }
+}
+
+.blrm_trial_predict <- function(trial, newdata, ...) {
+  .assert_is_blrm_trial_and_prior_is_set(trial)
+  assert_tibble(newdata)
+  dots <- rlang::list2(...)
+
+  summary_call <- modifyList(
+    list(object = trial$blrmfit, newdata = newdata),
+    dots,
+    keep.null = TRUE
+  )
+  trial_est <- do.call(summary, summary_call)
+
+  ## For EWOC determiniation we must use the mean predictor and apply
+  ## a transformation to 0-1 scale
+  summary_call_ewoc <- modifyList(
+    summary_call,
+    list(
+      predictive = FALSE,
+      transform = TRUE
+    )
+  )
+  if (length(trial$interval_prob) > 0) {
+    summary_call_ewoc <- modifyList(
+      summary_call_ewoc,
+      list(interval_prob = trial$interval_prob)
+    )
+  }
+
+  trial_ewoc_crit <- do.call(summary, summary_call_ewoc)
+
+  trial_est_ewoc <- .blrm_trial_compute_ewoc(trial, trial_ewoc_crit)
+
+  ewoc_cols <- setdiff(names(trial_est_ewoc), names(trial_est))
+
+  trial_est <- cbind(trial_est, trial_est_ewoc[ewoc_cols])
+
+  common_column_names <- unique(intersect(
+    colnames(trial_est),
+    colnames(newdata)
+  ))
+  newdata_prediction <- newdata
+
+  if (length(common_column_names) > 0) {
+    newdata_prediction <- dplyr::select(
+      newdata_prediction,
+      -common_column_names
+    )
+  }
+
+  newdata_prediction <- cbind(newdata_prediction, trial_est)
+
+  as_tibble(newdata_prediction)
+}
+
+
+.blrm_trial_compute_simple_prior <- function(
+  object,
+  EXNEX_comp,
+  EX_prob_comp_hist,
+  EX_prob_comp_new,
+  EXNEX_inter,
+  EX_prob_inter,
+  ...
+) {
+  .assert_is_blrm_trial(object)
+  trial <- object
+
+  group_id <- 0 ## Suppress group_id binding warning
+
+  ## Should not be used with more than one stratum
+  assert_that(
+    trial$num_strata == 1,
+    msg = "Simplified prior can only be set up with a single stratum. Omit the reference_p_dlt argument and set the prior up yourself using update()."
+  )
+
+  ## This is primarily a help to get started with blrm_trial and should not be used in production - warn the user:
+  warning(
+    "Simplified prior CAN and WILL change with releases. NOT recommended to use in production. Instantiating a simplified prior - run summary(trial, \"blrm_exnex_call\") to inspect arguments. "
+  )
+
+  ## Prior mean and sd on log mu_{alpha_i}, log mu_{beta_i}
+  ref_p_dlt <- trial$drug_info$reference_p_dlt
+  names(ref_p_dlt) <- trial$drug_info$drug_name
+
+  prior_EX_mu_comp_expr <- list()
+  for (comp in 1:trial[["num_components"]]) {
+    prior_EX_mu_comp_expr[[comp]] <- paste0(
+      "mixmvnorm(c(1, logit(",
+      ref_p_dlt[comp],
+      "), 0, diag(c(2, 0.7)^2)))"
+    )
+  }
+  prior_EX_mu_comp <- str2lang(paste0(
+    "list(",
+    paste0(unlist(prior_EX_mu_comp_expr), collapse = ", "),
+    ")"
+  ))
+
+  ## Prior mean and sd on tau_{alpha_{s,i}}, tau{beta_{s,i}}
+  prior_EX_tau_comp <- substitute(
+    replicate(
+      num_components,
+      mixmvnorm(c(1, log(0.25), log(0.125), diag((c(4, 2) / 1.96)^2))),
+      FALSE
+    ),
+    list(num_components = trial[["num_components"]])
+  )
+
+  # Prior mean and sd on mu_{eta}
+  if (trial[["num_interaction_terms"]] > 0) {
+    prior_EX_mu_inter <- substitute(
+      mixmvnorm(c(
+        1,
+        mu_inter,
+        diag(sd_inter^2, num_interaction_terms, num_interaction_terms)
+      )),
+      list(
+        mu_inter = rep.int(0, trial[["num_interaction_terms"]]),
+        sd_inter = rep.int(1.5, trial[["num_interaction_terms"]]),
+        num_interaction_terms = trial[["num_interaction_terms"]]
+      )
+    )
+
+    prior_EX_tau_inter <- substitute(
+      mixmvnorm(c(
+        1,
+        m_tau,
+        diag(s_tau^2, num_interaction_terms, num_interaction_terms)
+      )),
+      list(
+        m_tau = str2lang(paste0(
+          "c(",
+          paste0(
+            rep.int("log(0.5)", trial[["num_interaction_terms"]]),
+            collapse = ", "
+          ),
+          ")"
+        )),
+        s_tau = str2lang(paste0(
+          "c(",
+          paste0(
+            rep.int("log(2)/1.96", trial[["num_interaction_terms"]]),
+            collapse = ", "
+          ),
+          ")"
+        )),
+        num_interaction_terms = trial[["num_interaction_terms"]]
+      )
+    )
+  } else {
+    prior_EX_mu_inter <- NULL
+    prior_EX_tau_inter <- NULL
+  }
+
+  prior_is_EXNEX_comp <- rep(EXNEX_comp, trial[["num_components"]])
+
+  ## By default, historical data have
+  prior_EX_prob_comp <- matrix(NA, nrow = 0, ncol = trial[["num_components"]])
+  ## Go in order of the factor levels
+  for (group_name in levels(trial$group_id_factor)) {
+    if (EXNEX_comp) {
+      if (
+        nrow(filter(trial$data, group_id == group_name)) > 0 &&
+          nrow(filter(trial$dose_info, group_id == group_name)) == 0
+      ) {
+        ## There is exclusively historic data
+        prior_EX_prob_comp <- rbind(
+          prior_EX_prob_comp,
+          matrix(EX_prob_comp_hist, nrow = 1, ncol = trial[["num_components"]])
+        )
+      } else {
+        ## There is no historic data for this group, or there is also new data expected
+        prior_EX_prob_comp <- rbind(
+          prior_EX_prob_comp,
+          matrix(EX_prob_comp_new, nrow = 1, ncol = trial[["num_components"]])
+        )
+      }
+    } else {
+      prior_EX_prob_comp <- rbind(
+        prior_EX_prob_comp,
+        matrix(1, nrow = 1, ncol = trial[["num_components"]])
+      )
+    }
+  }
+
+  prior_is_EXNEX_inter <- rep(EXNEX_inter, trial[["num_interaction_terms"]])
+
+  if (EXNEX_inter) {
+    prior_EX_prob_inter <- matrix(
+      EX_prob_inter,
+      nrow = trial[["num_groups"]],
+      ncol = trial[["num_interaction_terms"]]
+    )
+  } else {
+    prior_EX_prob_inter <- matrix(
+      1,
+      nrow = trial[["num_groups"]],
+      ncol = trial[["num_interaction_terms"]]
+    )
+  }
+
+  prior_tau_dist <- 1
+  ## Compute prior and return resulting trial object
+  update(
+    object = trial,
+    prior_EX_mu_comp = prior_EX_mu_comp,
+    prior_EX_tau_comp = prior_EX_tau_comp,
+    prior_EX_mu_inter = prior_EX_mu_inter,
+    prior_EX_tau_inter = prior_EX_tau_inter,
+    prior_is_EXNEX_comp = prior_is_EXNEX_comp,
+    prior_EX_prob_comp = prior_EX_prob_comp,
+    prior_is_EXNEX_inter = prior_is_EXNEX_inter,
+    prior_EX_prob_inter = prior_EX_prob_inter,
+    prior_tau_dist = prior_tau_dist,
+    ...
+  )
+}
+
+
+.blrm_trial_compute_prior <- function(object, ...) {
+  .assert_is_blrm_trial(object)
+  trial <- object
+
+  dot.args <- rlang::list2(...) # Evaluate arguments here
+  ref_doses <- trial[["ref_doses"]]
+  formula <- as.formula(trial[["formula"]][["blrm_formula"]])
+  data <- .blrm_trial_merge_data(
+    trial,
+    bind_rows(trial[["group_to_stratum_mapping"]], trial[["data"]])
+  )
+  ## SW: the as.name is something I picked up here:
+  ## https://github.com/WinVector/wrapr/blob/master/extras/MacrosInR.md
+  ## (just delete this comment if you fine with this change)
+  dot.args <- modifyList(
+    list(formula = formula, data = as.name("data")),
+    dot.args,
+    keep.null = TRUE
+  )
+
+  trial$blrmfit <- do.call("blrm_exnex", dot.args)
+
+  trial$update_blrmfit <- function(trial, ...) {
+    .assert_is_blrm_trial_and_prior_is_set(trial)
+
+    args <- rlang::list2(...)
+    if (has_name(args, "data")) {
+      args[["data"]] <- .blrm_trial_sanitize_data(
+        trial = trial,
+        data = args[["data"]]
+      )
+      trial$data <- args[["data"]]
+      args[["data"]] <- bind_rows(
+        trial$group_to_stratum_mapping,
+        args[["data"]]
+      )
+    }
+
+    if (has_name(args, "add_data")) {
+      args[["add_data"]] <- .blrm_trial_sanitize_data(
+        trial = trial,
+        data = args[["add_data"]]
+      )
+
+      if (!has_name(args[["add_data"]], "cohort_time")) {
+        next_index <- max(dplyr::select(trial$data, "cohort_time"))
+        if (is.na(next_index)) {
+          next_index <- 1
+        } else {
+          next_index <- next_index + 1
+        }
+
+        args[["add_data"]]$cohort_time <- next_index
+      }
+
+      trial$data <- bind_rows(trial$data, args[["add_data"]])
+      args[["data"]] <- bind_rows(trial$group_to_stratum_mapping, trial$data)
+      args[["add_data"]] <- NULL
+    }
+
+    if (has_name(args, "data")) {
+      args[["data"]] <- .blrm_trial_merge_data(trial, args[["data"]])
+    }
+
+    trial$blrmfit <- do.call("update", c(list(trial$blrmfit), args))
+
+    trial
+  }
+
+  trial
+}
+
+.blrm_trial_merge_data <- function(trial, data) {
+  .assert_is_blrm_trial(trial)
+  assert_tibble(data)
+
+  ## Silence R CRAN check notes
+  num_patients <- num_toxicities <- NULL
+
+  ## Summarize data for performance
+  summarized_data <- ungroup(dplyr::summarize(
+    group_by(
+      data,
+      pick(all_of(c("group_id", "stratum_id", names(trial$ref_doses))))
+    ),
+    num_patients = sum(num_patients),
+    num_toxicities = sum(num_toxicities)
+  ))
+
+  ## Return sorted data for improved reproducibility
+  arrange_at(
+    summarized_data,
+    c("group_id", "stratum_id", names(trial$ref_doses))
+  )
+}
+
+.blrm_trial_sanitize_data <- function(
+  trial,
+  data,
+  trial_is_being_constructed = FALSE,
+  warning_if_dose_not_prespecified = TRUE,
+  require_num_patients = TRUE,
+  require_num_toxicities = TRUE
+) {
+  if (!trial_is_being_constructed) {
+    .assert_is_blrm_trial(trial)
+  }
+
+  assert_tibble(data)
+
+  ## make R CMD check happy
+  dose_id <- NULL
+
+  if (!has_name(data, "stratum_id")) {
+    if (nlevels(trial$stratum_id_factor) == 1) {
+      data$stratum_id <- levels(trial$stratum_id_factor)[1]
+      message(
+        "stratum_id not given, but only one stratum defined. Assigning first stratum."
+      )
+    } else {
+      stop("stratum_id not defined even though there are multiple strata!")
+    }
+  }
+
+  assert_that(has_name(data, "stratum_id"))
+  assert_that(has_name(data, "group_id"))
+
+  if (!is.factor(data$stratum_id[0])) {
+    data$stratum_id <- factor(
+      data$stratum_id,
+      levels = levels(trial$stratum_id_factor)
+    )
+    assert_that(
+      !any(is.na(data$stratum_id)),
+      msg = "stratum_id level inconsistent or NA"
+    )
+  }
+
+  assert_factor(
+    data$stratum_id[0],
+    levels = levels(trial$stratum_id_factor),
+    n.levels = nlevels(trial$stratum_id_factor)
+  )
+
+  if (!is.factor(data$group_id[0])) {
+    data$group_id <- factor(
+      data$group_id,
+      levels = levels(trial$group_id_factor)
+    )
+    assert_that(
+      !any(is.na(data$group_id)),
+      msg = "group_id level inconsistent or NA"
+    )
+  }
+  assert_factor(
+    data$group_id[0],
+    levels = levels(trial$group_id_factor),
+    n.levels = nlevels(trial$group_id_factor)
+  )
+
+  assert_that((!require_num_patients) || has_name(data, "num_patients"))
+  assert_that((!require_num_toxicities) || has_name(data, "num_toxicities"))
+
+  ## Data must have columns that correspond to drug name
+  ## Note: all() is needed for assertthat 0.2.0 compatibility
+  assert_that(all(has_name(data, colnames(trial$ref_doses))))
+
+  ## Check that dose_id is consistent
+  if (has_name(data, "dose_id")) {
+    colnames_for_join <- c(
+      "dose_id",
+      "group_id",
+      "stratum_id",
+      trial$drug_info$drug_name
+    )
+    data_consistent_with_dose_info <- inner_join(
+      data,
+      trial$dose_info,
+      by = colnames_for_join
+    )
+    assert_that(
+      nrow(filter(data, !is.na(dose_id))) ==
+        nrow(data_consistent_with_dose_info),
+      msg = "dose_id inconsistent with dose combinations. dose_id must be a unique identifier for dose_combo / group_id / stratum_id!"
+    )
+
+    colnames_for_final_join <- unique(c(
+      intersect(colnames(data), colnames(trial$dose_info)),
+      c("dose_id", "group_id", "stratum_id", trial$drug_info$drug_name)
+    ))
+    data_consistent_with_dose_info_final <- inner_join(
+      data,
+      trial$dose_info,
+      by = colnames_for_final_join
+    )
+    assert_that(
+      nrow(filter(data, !is.na(dose_id))) ==
+        nrow(data_consistent_with_dose_info_final),
+      msg = "dose_id inconsistent with dose combinations. dose_id must be a unique identifier for dose_combo / group_id / stratum_id!"
+    )
+
+    if (any(is.na(data$dose_id))) {
+      warning(
+        "dose_id NA was provided - cannot check consistency of new data with pre-specified dose_info"
+      )
+    }
+  } else {
+    ## If no dose_id is provided, resolve it
+    colnames_for_join <- c("group_id", "stratum_id", trial$drug_info$drug_name)
+    data_consistent_with_dose_info <- inner_join(
+      data,
+      trial$dose_info,
+      by = colnames_for_join
+    )
+
+    colnames_for_final_join <- unique(c(
+      intersect(colnames(data), colnames(trial$dose_info)),
+      colnames_for_join
+    ))
+    data_consistent_with_dose_info_all_cols <- inner_join(
+      data,
+      trial$dose_info,
+      by = colnames_for_final_join
+    )
+    assert_that(
+      nrow(data_consistent_with_dose_info) ==
+        nrow(data_consistent_with_dose_info_all_cols),
+      msg = "Data does not uniquely resolve in terms of dose_combo / group_id / stratum_id and user-defined additional columns!"
+    )
+
+    data_consistent_with_dose_info_final <- left_join(
+      data,
+      trial$dose_info,
+      by = colnames_for_final_join
+    )
+
+    if (
+      any(is.na(data_consistent_with_dose_info_final$dose_id)) &&
+        warning_if_dose_not_prespecified
+    ) {
+      warning(
+        "Data that was provided does not correspond to a pre-specified dose!"
+      )
+    }
+
+    data <- data_consistent_with_dose_info_final
+  }
+
+  return(data)
+}
+
+
+.create_group_to_stratum_mapping <- function(
+  dose_info,
+  data,
+  drug_names
+) {
+  assert_tibble(dose_info)
+  assert_tibble(data)
+
+  ## Create dummy data to map group_ids to stratum_ids in the model
+  group_to_stratum_mapping <- unique(dplyr::select(
+    bind_rows(dose_info, data),
+    any_of(c("group_id", "stratum_id"))
+  ))
+
+  ## Add group to stratum mapping so groups are mapped correctly even
+  ## if they do not contain data (not yet)
+  group_to_stratum_mapping <- bind_rows(data[0, ], group_to_stratum_mapping)
+  group_to_stratum_mapping <- mutate(
+    group_to_stratum_mapping,
+    across(
+      c(.data[["num_patients"]], .data[["num_toxicities"]]),
+      function(x) (0)
+    )
+  )
+
+  group_to_stratum_mapping <- mutate(
+    group_to_stratum_mapping,
+    across(any_of(drug_names), function(x) (1))
+  )
+
+  # Ensure each group is only in (precisely) one stratum
+  with(
+    group_to_stratum_mapping,
+    .validate_group_stratum_nesting(group_id, stratum_id)
+  )
+
+  group_to_stratum_mapping
+}
+
+.assert_is_blrm_trial_and_prior_is_set <- function(object) {
+  .assert_is_blrm_trial(object)
+  assert_that(
+    !is.null(object$blrmfit),
+    msg = "Prior must be specified. Use update() with arguments for blrm_exnex to configure the prior."
+  )
+}
+
+.assert_is_blrm_trial <- function(object) {
+  assert_class(object, "blrm_trial")
+}
+
+.sanitize_dose_info <- function(trial, dose_info) {
+  assert_tibble(dose_info)
+
+  if (!has_name(dose_info, "stratum_id")) {
+    message(
+      "No stratum defined - assigning all groups to single stratum \"all\""
+    )
+    dose_info[["stratum_id"]] <- "all"
+  }
+
+  assert_that(has_name(dose_info, "stratum_id"))
+  assert_that(has_name(dose_info, "group_id"))
+  assert_that(!has_name(dose_info, "num_patients"))
+  assert_that(!has_name(dose_info, "num_toxicities"))
+
+  # dose_info must have columns that correspond to drug name
+  # Note: all() is needed for assertthat 0.2.0 compatibility
+  assert_that(
+    all(has_name(dose_info, trial$drug_info$drug_name)),
+    msg = "dose_info must use same drug names as specified in drug_info"
+  )
+
+  if (!has_name(dose_info, "dose_id")) {
+    # warning("dose_info do not contain \"dose_id\" - adding \"dose_id\" column")
+    dose_info <- tibble::rowid_to_column(dose_info, "dose_id")
+  }
+
+  # dose_info must not have any duplications where group_id, stratum_id and all
+  # the doses are the same since dose_id cannot be resolved in such a case
+  unique_cols_required <- c("group_id", "stratum_id", trial$drug_info$drug_name)
+
+  dose_info_unique_cols_only <- dplyr::select(
+    dose_info,
+    all_of(unique_cols_required)
+  )
+
+  assert_that(
+    nrow(dose_info_unique_cols_only) ==
+      nrow(dose_info_unique_cols_only %>% unique()),
+    msg = "dose_info must contain unique entries for dose_combo / group_id / stratum_id!"
+  )
+
+  return(dose_info)
+}
