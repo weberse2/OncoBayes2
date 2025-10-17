@@ -50,6 +50,14 @@ jobs:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
+          extra-repositories: 'https://mc-stan.org/r-packages/'
+          Ncpus: 4
+
+      - name: Install CmdStan
+        shell: Rscript {0}
+        run: |
+          cmdstanr::check_cmdstan_toolchain(fix = TRUE)
+          cmdstanr::install_cmdstan(version = "2.36.0", cores=4)
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
