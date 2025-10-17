@@ -1,2 +1,14 @@
 # OncoBayes2
-Bayesian logistic regression with optional EX/NEX modeling enables flexible borrowing from historical or concurrent data. The safety model supports dose-escalation in adaptive Phase I oncology trials with multiple drugs. See Neuenschwander et al. (2008, 2016) for methodology.
+
+Bayesian logistic regression model with optional
+EXchangeability-NonEXchangeability parameter modelling for flexible
+borrowing from historical or concurrent data-sources. The safety model
+can guide dose-escalation decisions for adaptive Oncology phase I
+dose-escalation trials which involve an arbitrary number of drugs.
+
+## Getting Started
+
+To get a quick overview over the package functionality, please refer
+to the introductory
+[vignette](articles/index.html).
+
