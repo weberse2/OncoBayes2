@@ -1,12 +1,5 @@
-url: https://opensource.nibr.com/OncoBayes2/
-
-destination: "./docs"
-
-# new theme available with pkgdown 2.0
-# using katex as per comment here: https://github.com/r-lib/pkgdown/issues/2704#issuecomment-2307055568
-# this is needed to get equations to work with pkgdown 2.1.1
-# version following pkfdown 2.1.1 should not require these
-# customizations any longer
+url: http://opensource.nibr.com/OncoBayes2/
+destination: ./docs
 template:
   bootstrap: 5
   includes:
@@ -14,20 +7,17 @@ template:
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
       <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
       <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
-
 reference:
 - title: Package overview
-  desc:  Global options and references
-- contents:
-  - OncoBayes2
+  desc: Global options and references
+- contents: OncoBayes2
 - title: Model fitting
 - contents:
   - blrm_exnex
   - blrm_trial
   - starts_with("update")
 - title: Model specification
-- contents:
-  - starts_with("blrm_formula")
+- contents: starts_with("blrm_formula")
 - title: Model summary
 - contents:
   - starts_with("summary")
@@ -40,8 +30,7 @@ reference:
   - starts_with("diagnostic")
   - starts_with("draws")
 - title: Examples
-- contents:
-  - starts_with("example")
+- contents: starts_with("example")
 - title: Datasets
 - contents:
   - hist_SA
@@ -55,3 +44,4 @@ reference:
   - bind_rows_0
   - nsamples
   - logit
+

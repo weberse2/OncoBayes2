@@ -34,3 +34,4 @@
 ^man/package-doc$
 ^src/package-binary$
 ^Makefile$
+^\.github$
