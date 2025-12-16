@@ -8,10 +8,14 @@ if (!exists("gold_runs")) {
     .mc_options <- default_sampling()
     gold_runs <- load_gold(TRUE)
     options(.mc_options)
+  } else if (is_ci()) {
+    .mc_options <- default_sampling()
+    gold_runs <- load_gold(TRUE)
+    options(.mc_options)
   } else {
     # load gold runs, use cache if available, but do short
     # sampling if not
-    if (!is_cran() | is_ci()) {
+    if (!is_cran()) {
       .mc_options <- very_fast_sampling()
     } else {
       .mc_options <- fake_sampling()
