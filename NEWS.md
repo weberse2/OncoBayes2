@@ -1,3 +1,15 @@
+
+# OncoBayes2 0.9-4 - December 16th, 2025
+
+## Enhancements
+
+* Add public pkgdown web-site and establish new GitHub homepage of
+  OnocBayes2
+
+## Bug fixes
+
+* Address formatting issues in roxgen2 documentation
+
 # OncoBayes2 0.9-3 - April 25th, 2025
 
 ## Bug fixes

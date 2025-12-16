@@ -52,3 +52,11 @@ rsconnect/
 docs
 /doc/
 /Meta/
+
+NAMESPACE
+man
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+docs

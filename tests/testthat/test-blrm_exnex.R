@@ -87,6 +87,7 @@ test_that(
 )
 
 test_that("blrm_exnex data handling consistency single-agent with cmdstanr backend", {
+  skip_if_not_installed("cmdstanr")
   skip_on_cran()
   withr::with_options(list(OncoBayes2.MC.backend = "cmdstanr"), {
     single_agent_cmdstanr <- run_example("single_agent")
@@ -95,6 +96,7 @@ test_that("blrm_exnex data handling consistency single-agent with cmdstanr backe
 })
 
 test_that("blrm_exnex data handling consistency combo2 with cmdstanr backend", {
+  skip_if_not_installed("cmdstanr")
   skip_on_cran()
   withr::with_options(list(OncoBayes2.MC.backend = "cmdstanr"), {
     combo2_cmdstanr <- run_example("combo2")
@@ -103,6 +105,7 @@ test_that("blrm_exnex data handling consistency combo2 with cmdstanr backend", {
 })
 
 test_that("blrm_exnex data handling consistency combo3 with cmdstanr backend", {
+  skip_if_not_installed("cmdstanr")
   skip_on_cran()
   withr::with_options(list(OncoBayes2.MC.backend = "cmdstanr"), {
     combo3_cmdstanr <- run_example("combo3")
@@ -3294,6 +3297,7 @@ test_that("blrm_exnex exits gracefully with an error message when Stan does not 
 })
 
 test_that("blrm_exnex exits gracefully with an error message when Stan does not sample with cmdstanr", {
+  skip_if_not_installed("cmdstanr")
   skip_on_cran()
 
   ## give wrong argument to Stan sampler...should give us a proper error message

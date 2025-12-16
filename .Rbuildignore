@@ -34,5 +34,4 @@
 ^man/package-doc$
 ^src/package-binary$
 ^Makefile$
-^\.github$
-^codecov\.yml$
+^LICENSE$
