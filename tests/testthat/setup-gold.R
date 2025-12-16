@@ -1,8 +1,6 @@
 is_ci <- function() nzchar(Sys.getenv("CI"))
 
-is_cran <- function() {
-  tolower(Sys.getenv("NOT_CRAN", unset = "")) != "true"
-}
+is_cran <- function() testthat:::on_cran()
 
 if (!exists("gold_runs")) {
   if (!is_cran() & identical(Sys.getenv("TEST_VDIFFR"), "true")) {
