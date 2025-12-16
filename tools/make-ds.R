@@ -75,7 +75,7 @@ make_internal_ds <- function() {
   calibration_meta["MD5"] <- vals["MD5"]
 
   pkg_create_date <- Sys.time()
-  pkg_sha <- "2fb9a84"
+  pkg_sha <- "5b2d65a"
 
   if (gsub("\\$", "", pkg_sha) == "Format:%h") {
     pkg_sha <- system("git rev-parse --short HEAD", intern = TRUE)
