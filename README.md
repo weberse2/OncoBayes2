@@ -10,5 +10,7 @@ dose-escalation trials which involve an arbitrary number of drugs.
 
 To get a quick overview over the package functionality, please refer
 to the introductory
-[vignette](articles/index.html).
+[vignette](https://opensource.nibr.com/OncoBayes2/articles/introduction.html). An
+additional vignette discusses the use of historical data via the
+[meta-analytic-approach](https://opensource.nibr.com/OncoBayes2/articles/map_approach.html).
 
