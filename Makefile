@@ -11,6 +11,12 @@ SRCDIR = ./demo ./inst/stan ./inst/stan/include ./man-roxygen ./vignettes
 OUTDIR_ABS=$(abspath $(OUTDIR))
 PROJROOT_ABS=$(abspath .)
 
+
+# html doc targets
+HTML_DOC_DIR = inst/doc_html
+RDS    = $(wildcard man/*.Rd)
+HTMLS  = $(patsubst man/%.Rd,$(HTML_DOC_DIR)/%.html,$(RDS))
+
 RPKG=$(patsubst ‘%’, %, $(word 2, $(shell grep ^Package: DESCRIPTION)))
 INCS = 
 R_PKG_SRCS = $(wildcard R/*.R inst/examples/*R tests/testthat/*R)
@@ -34,6 +40,9 @@ MD5 ?= md5sum
 TMPDIR := $(realpath $(shell mktemp -d))
 
 all : $(TARGET)
+
+inst/doc_html/%.html : man/%.Rd
+	"${R_HOME}/bin/R" --vanilla --slave -e 'tools::Rd2HTML("$<", out="$@")'
 
 # tell makefile how to turn a Rmd into an md file
 %.md : %.Rmd
@@ -102,6 +111,7 @@ inst/doc/$(RPKG).pdf : man/package-doc
 	"${R_HOME}/bin/R" CMD Rd2pdf --batch --no-preview --force --output=inst/doc/$(RPKG).pdf .
 	"${R_HOME}/bin/R" --vanilla --slave -e 'library(tools); tools::compactPDF("inst/doc/$(RPKG).pdf")'
 
+man/%.Rd : man/package-doc
 
 NAMESPACE: man/package-doc
 
@@ -143,6 +153,15 @@ build/r-source-release : $(BIN_OBJS) $(DOC_OBJS) $(SRCS) inst/sbc/sbc_report.htm
 	cd build; $(MD5) $(RPKG)-$(GIT_TAG).tar.gz > $(RPKG)-$(GIT_TAG).md5
 	cd build; $(MD5) $(RPKG)_$(PKG_VERSION).tar.gz > $(RPKG)_$(PKG_VERSION).md5
 	touch build/r-source-release
+
+
+# Build all HTML manuals
+html-man: $(HTML_DOC_DIR) $(HTMLS)
+	@echo "HTML manuals are in $(HTML_DOC_DIR)/"
+
+# Ensure output directory exists
+$(HTML_DOC_DIR):
+	@mkdir -p $(HTML_DOC_DIR)
 
 PHONY += r-source-release
 r-source-release : build/r-source-release

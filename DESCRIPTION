@@ -10,7 +10,7 @@ Description: Bayesian logistic regression model with optional
   <doi:10.1002/sim.3230> and Neuenschwander et al. (2016)
   <doi:10.1080/19466315.2016.1174149> for details on the methodology.
 Version: 0.9-4
-Date: 2025-12-16
+Date: 2025-12-17
 Authors@R: c(person("Novartis", "Pharma AG", role = "cph")
             ,person("Sebastian", "Weber", email="sebastian.weber@novartis.com", role=c("aut", "cre"))
             ,person("Lukas A.", "Widmer", email="lukas_andreas.widmer@novartis.com", role="aut")
