@@ -158,7 +158,7 @@ examples <- list(
       drug_name = "drug1",
       dose_ref = 1,
       dose_unit = "ngogn"
-es    )
+    )
   ),
   multi_drug_single_group = list(
     histdata = tibble::tibble(
