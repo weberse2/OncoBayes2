@@ -72,7 +72,7 @@ intercept and slope parameters \eqn{\boldsymbol\mu_i =
 single drug model, then a mixture prior is accepted as well.}
 
 \item{prior_EX_mu_mean_comp, prior_EX_mu_sd_comp}{\if{html}{\out{
-<!------------->
+<!-- nobreak -->
 }}
 
 
@@ -90,7 +90,7 @@ stratum \eqn{s = 1}), then it suffices to provide a bivariate
 normal mixture prior instead of a list with just one element.}
 
 \item{prior_EX_tau_mean_comp, prior_EX_tau_sd_comp}{\if{html}{\out{
-<!----------->
+<!-- nobreak -->
 }}
 
 
@@ -116,7 +116,7 @@ interaction parameter vector
 number of interactions.}
 
 \item{prior_EX_mu_mean_inter, prior_EX_mu_sd_inter}{\if{html}{\out{
-<!------------>
+<!-- nobreak -->
 }}
 
 
@@ -133,7 +133,7 @@ stratum \eqn{s = 1}), then it suffices to provide a mixture prior
 instead of a list with just one element.}
 
 \item{prior_EX_tau_mean_inter, prior_EX_tau_sd_inter}{\if{html}{\out{
-<!---------->
+<!-- nobre -->
 }}
 
 
@@ -148,13 +148,13 @@ corresponding to a marginal uniform prior of the correlations.}
 
 \item{prior_is_EXNEX_inter}{Defines if non-exchangability is
 admitted for a given interaction parameter. Logical vector of
-length equal to the number of interactions. If missing
-\code{FALSE} is assumed for all interactions.}
+length equal to the number of interactions. If missing \code{FALSE} is
+assumed for all interactions.}
 
 \item{prior_is_EXNEX_comp}{Defines if non-exchangability is
 admitted for a given component. Logical vector of length equal to
-the number of components. If missing \code{TRUE} is assumed for
-all components.}
+the number of components. If missing \code{TRUE} is assumed for all
+components.}
 
 \item{prior_EX_prob_comp}{Prior probability \eqn{p_{ij}} for
 exchangability of each component per group. Matrix with one
@@ -174,7 +174,7 @@ for the EX part. It is required that the specification be the
 same across groups j.}
 
 \item{prior_NEX_mu_mean_comp, prior_NEX_mu_sd_comp}{\if{html}{\out{
-<!----------->
+<!-- nobreak -->
 }}
 
 
@@ -193,7 +193,7 @@ must correspond to the number of interactions. If missing set to
 the same prior as given for the EX part.}
 
 \item{prior_NEX_mu_mean_inter, prior_NEX_mu_sd_inter}{\if{html}{\out{
-<!--------->
+<!-- nobrea -->
 }}
 
 
@@ -209,11 +209,10 @@ heterogeniety parameters. Choices are 0=fixed to it's mean,
 1=log-normal, 2=truncated normal or \code{NULL} shutting off the
 hierarchical structure of the model.}
 
-\item{sample_map}{Logical flag (defaults to \code{FALSE})
-controlling inclusion of MAP priors for each stratum defined as
-part of the generated posterior. If set to \code{TRUE} then the
-posterior samples will contain \code{map_log_beta} and
-\code{map_eta} variables.}
+\item{sample_map}{Logical flag (defaults to \code{FALSE}) controlling
+inclusion of MAP priors for each stratum defined as part of the
+generated posterior. If set to \code{TRUE} then the posterior samples
+will contain \code{map_log_beta} and \code{map_eta} variables.}
 
 \item{iter}{number of iterations (including warmup).}
 
@@ -239,12 +238,12 @@ unconstrained space for random initialization. See
 \item{backend}{sets Stan backend to be used. Possible choices are
 \code{"rstan"} (default) or \code{"cmdstanr"}.}
 
-\item{prior_PD}{Logical flag (defaults to \code{FALSE}) indicating
-if to sample the prior predictive distribution instead of
-conditioning on the data.}
+\item{prior_PD}{Logical flag (defaults to \code{FALSE}) indicating if to
+sample the prior predictive distribution instead of conditioning
+on the data.}
 
-\item{verbose}{Logical flag (defaults to \code{FALSE}) controlling
-if additional output like stan progress is reported.}
+\item{verbose}{Logical flag (defaults to \code{FALSE}) controlling if
+additional output like stan progress is reported.}
 
 \item{x}{\code{blrmfit} object to print}
 

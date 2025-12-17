@@ -12,7 +12,7 @@ suppressPackageStartupMessages(library(dplyr))
 
 test_that("critical interval probabilites are consistent for blrmfit objects", {
   skip_on_cran()
-
+  
   ## these tests recover the doses in a data-set by first obtaining
   ## the interval probabilities from the summary method and then
   ## recovering the respective doses

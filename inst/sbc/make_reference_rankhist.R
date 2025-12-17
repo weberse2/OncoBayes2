@@ -62,7 +62,7 @@ if (scheduler == "multiprocess") {
 }
 if (scheduler %in% c("LSF", "SGE", "SLURM", "PBS", "Torque")) {
   ## on a queuing enabled backend, we use a lot more parallelism
-  n_jobs <- 200
+  n_jobs <- 600
   ## n_jobs  <- 10
 }
 
@@ -86,7 +86,7 @@ idx_warmup <- scenarios$repl <= S_warmup
 scenarios_warmup <- scenarios[idx_warmup, ]
 scenarios_main <- scenarios[!idx_warmup, ]
 
-worker <- clustermq::workers(n_jobs, reuse = TRUE, template = list(walltime = 300, job_name = "ob2_sbc", memory = 6 * 1024), log_worker = FALSE)
+worker <- clustermq::workers(n_jobs, reuse = TRUE, template = list(walltime = 59, job_name = paste0("ob2_sbc[1-", n_jobs, "] #"), memory = 6 * 1024), log_worker = FALSE)
 
 if (FALSE) {
   ## for debugging purposes

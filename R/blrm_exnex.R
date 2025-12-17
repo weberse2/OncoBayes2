@@ -22,7 +22,7 @@
 #'   intercept and slope parameters \eqn{\boldsymbol\mu_i =
 #'   (\mu_{\alpha i}, \mu_{\beta i})} of each component. In case of a
 #'   single drug model, then a mixture prior is accepted as well.
-#' @param prior_EX_mu_mean_comp,prior_EX_mu_sd_comp <!------------->
+#' @param prior_EX_mu_mean_comp,prior_EX_mu_sd_comp <!-- nobreak -->
 #'   `r lifecycle::badge("deprecated")` Please use `prior_EX_mu_comp`
 #'   instead. Mean and sd for the prior on the mean parameters
 #'   \eqn{\boldsymbol\mu_i = (\mu_{\alpha i}, \mu_{\beta i})} of each
@@ -34,7 +34,7 @@
 #'   differential discounting is required (i.e. if there is only one
 #'   stratum \eqn{s = 1}), then it suffices to provide a bivariate
 #'   normal mixture prior instead of a list with just one element.
-#' @param prior_EX_tau_mean_comp,prior_EX_tau_sd_comp <!----------->
+#' @param prior_EX_tau_mean_comp,prior_EX_tau_sd_comp <!-- nobreak -->
 #'   `r lifecycle::badge("deprecated")` Please use `prior_EX_tau_comp`
 #'   instead. Prior mean and sd for heterogeniety parameter
 #'   \eqn{\boldsymbol\tau_{si} = (\tau_{\alpha s i}, \tau_{\beta s
@@ -53,7 +53,7 @@
 #'   interaction parameter vector
 #'   \eqn{\boldsymbol{\mu_{\eta}}}. Dimension must correspond to the
 #'   number of interactions.
-#' @param prior_EX_mu_mean_inter,prior_EX_mu_sd_inter <!------------>
+#' @param prior_EX_mu_mean_inter,prior_EX_mu_sd_inter <!-- nobreak -->
 #'   `r lifecycle::badge("deprecated")` Please use `prior_EX_mu_inter`
 #'   instead. Prior mean and sd for population mean parameters
 #'   \eqn{\mu_{\eta k}} of each interaction parameter. Vector of
@@ -64,7 +64,7 @@
 #'   differential discounting is required (i.e. if there is only one
 #'   stratum \eqn{s = 1}), then it suffices to provide a mixture prior
 #'   instead of a list with just one element.
-#' @param prior_EX_tau_mean_inter,prior_EX_tau_sd_inter <!---------->
+#' @param prior_EX_tau_mean_inter,prior_EX_tau_sd_inter <!-- nobre -->
 #'   `r lifecycle::badge("deprecated")` Please use
 #'   `prior_EX_tau_inter` instead. Prior mean and sd for heterogeniety
 #'   parameter \eqn{\tau_{\eta s k}} of each stratum. Matrix with one
@@ -86,7 +86,7 @@
 #'   non-exchangable case. If missing set to the same prior as given
 #'   for the EX part. It is required that the specification be the
 #'   same across groups j.
-#' @param prior_NEX_mu_mean_comp,prior_NEX_mu_sd_comp <!----------->
+#' @param prior_NEX_mu_mean_comp,prior_NEX_mu_sd_comp <!-- nobreak -->
 #'   `r lifecycle::badge("deprecated")` Please use `prior_NEX_mu_comp`
 #'   instead. Prior mean \eqn{\boldsymbol m_{ij}} and sd
 #'   \eqn{\boldsymbol s_{ij} = \text{diag}(\boldsymbol S_{ij})} of
@@ -99,7 +99,7 @@
 #'   interaction parameter vector for non-exchangable case. Dimension
 #'   must correspond to the number of interactions. If missing set to
 #'   the same prior as given for the EX part.
-#' @param prior_NEX_mu_mean_inter,prior_NEX_mu_sd_inter <!--------->
+#' @param prior_NEX_mu_mean_inter,prior_NEX_mu_sd_inter <!-- nobrea -->
 #'   `r lifecycle::badge("deprecated")` Please use
 #'   `prior_NEX_mu_inter` instead. Prior mean \eqn{m_{\eta k j}} and
 #'   sd \eqn{s_{\eta k j}} for each interaction parameter for
@@ -108,27 +108,26 @@
 #'   EX part.
 #' @param prior_is_EXNEX_comp Defines if non-exchangability is
 #'   admitted for a given component. Logical vector of length equal to
-#'   the number of components. If missing `TRUE` is assumed for
-#'   all components.
+#'   the number of components. If missing `TRUE` is assumed for all
+#'   components.
 #' @param prior_is_EXNEX_inter Defines if non-exchangability is
 #'   admitted for a given interaction parameter. Logical vector of
-#'   length equal to the number of interactions. If missing
-#'   `FALSE` is assumed for all interactions.
+#'   length equal to the number of interactions. If missing `FALSE` is
+#'   assumed for all interactions.
 #' @param prior_tau_dist Defines the distribution used for
 #'   heterogeniety parameters. Choices are 0=fixed to it's mean,
 #'   1=log-normal, 2=truncated normal or `NULL` shutting off the
 #'   hierarchical structure of the model.
-#' @param sample_map Logical flag (defaults to `FALSE`)
-#'   controlling inclusion of MAP priors for each stratum defined as
-#'   part of the generated posterior. If set to `TRUE` then the
-#'   posterior samples will contain `map_log_beta` and
-#'   `map_eta` variables.
-#' @param prior_PD Logical flag (defaults to `FALSE`) indicating
-#'   if to sample the prior predictive distribution instead of
-#'   conditioning on the data.
+#' @param sample_map Logical flag (defaults to `FALSE`) controlling
+#'   inclusion of MAP priors for each stratum defined as part of the
+#'   generated posterior. If set to `TRUE` then the posterior samples
+#'   will contain `map_log_beta` and `map_eta` variables.
+#' @param prior_PD Logical flag (defaults to `FALSE`) indicating if to
+#'   sample the prior predictive distribution instead of conditioning
+#'   on the data.
 #' @template args-sampling
-#' @param verbose Logical flag (defaults to `FALSE`) controlling
-#'   if additional output like stan progress is reported.
+#' @param verbose Logical flag (defaults to `FALSE`) controlling if
+#'   additional output like stan progress is reported.
 #' @template args-dots-ignored
 #' @param digits number of digits to show
 #' @param x `blrmfit` object to print

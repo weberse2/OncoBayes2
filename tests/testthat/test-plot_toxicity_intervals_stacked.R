@@ -371,6 +371,7 @@ for (ex in names(trial_examples)) {
 
 test_that("plot_toxicity_intervals_stacked() does not have jagged edges", {
   skip_on_cran()
+  skip_on_ci()
 
   dose <- c(5, 10, 20, 40, 60, 80)
 

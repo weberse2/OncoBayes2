@@ -3,6 +3,7 @@
 ^data-raw$
 ^.gitlab-ci.yml$
 ^.gitignore$
+^.github$
 ^.gitattributes$
 ^inst/extra/install.*$
 ^src/.*so$
@@ -34,5 +35,4 @@
 ^man/package-doc$
 ^src/package-binary$
 ^Makefile$
-^\.github$
-^codecov\.yml$
+^LICENSE$

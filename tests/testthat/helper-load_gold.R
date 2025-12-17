@@ -6,7 +6,6 @@ load_gold <- function(use_cache = FALSE) {
   if (use_cache && file.exists(gold_path)) {
     gold_runs <- readRDS(gold_path)
   } else {
-    options(mc.cores = parallel::detectCores(logical = FALSE))
 
     set.seed(123144)
 
