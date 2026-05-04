@@ -176,6 +176,9 @@ applied if `p`, `qc` and `lower.tail` are missing.
 
 # fit an example model. See documentation for "combo2" example
 example_model("combo2", silent = TRUE)
+#> Warning: There were 10 transitions after warmup that exceeded the maximum treedepth. Increase max_treedepth above 10. See
+#> https://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
+#> Warning: Examine the pairs() plot to diagnose sampling problems
 #> Warning: The largest R-hat is NA, indicating chains have not mixed.
 #> Running the chains for more iterations may help. See
 #> https://mc-stan.org/misc/warnings.html#r-hat
@@ -195,14 +198,14 @@ drug_A_crit <- critical_quantile(blrmfit,
 )
 data_trial_ab$drug_A <- drug_A_crit
 summary(blrmfit, newdata = data_trial_ab, interval_prob = c(0, 0.16, 0.33, 1))
-#>        mean         sd       2.5%       50%     97.5% [0,0.16] (0.16,0.33]
-#> 1 0.2784784 0.10046646 0.15311191 0.2942422 0.4260879      0.1         0.6
-#> 2 0.2575160 0.10161998 0.09526054 0.2553971 0.3886394      0.1         0.6
-#> 3 0.2784784 0.10046646 0.15311191 0.2942422 0.4260879      0.1         0.6
-#> 4 0.2784784 0.10046646 0.15311191 0.2942422 0.4260879      0.1         0.6
-#> 5 0.2575160 0.10161998 0.09526054 0.2553971 0.3886394      0.1         0.6
-#> 6 0.2769644 0.08214743 0.18177646 0.2522595 0.4188390      0.0         0.7
-#> 7 0.2784784 0.10046646 0.15311191 0.2942422 0.4260879      0.1         0.6
+#>        mean         sd      2.5%       50%     97.5% [0,0.16] (0.16,0.33]
+#> 1 0.3072452 0.07743258 0.2088143 0.3081212 0.4480286        0         0.7
+#> 2 0.3124664 0.10773569 0.2099848 0.2813199 0.5333019        0         0.7
+#> 3 0.3072452 0.07743258 0.2088143 0.3081212 0.4480286        0         0.7
+#> 4 0.3072452 0.07743258 0.2088143 0.3081212 0.4480286        0         0.7
+#> 5 0.3124664 0.10773569 0.2099848 0.2813199 0.5333019        0         0.7
+#> 6 0.3111034 0.07302040 0.2106610 0.2981905 0.4308359        0         0.7
+#> 7 0.3072452 0.07743258 0.2088143 0.3081212 0.4480286        0         0.7
 #>   (0.33,1]
 #> 1      0.3
 #> 2      0.3

@@ -8,20 +8,20 @@ dose-escalation trials which involve an arbitrary number of drugs.
 
 ## Global Options
 
-|                             |                          |                                                  |
-|-----------------------------|--------------------------|--------------------------------------------------|
-| Option                      | Default                  | Description                                      |
-| `OncoBayes2.MC.warmup`      | 1000                     | MCMC warmup iterations                           |
-| `OncoBayes2.MC.iter`        | 2000                     | total MCMC iterations                            |
-| `OncoBayes2.MC.save_warmup` | TRUE                     | save warmup samples                              |
-| `OncoBayes2.MC.chains`      | 4                        | MCMC chains                                      |
-| `OncoBayes2.MC.thin`        | 1                        | MCMC thinning                                    |
-| `OncoBayes2.MC.control`     | `list(adapt_delta=0.99,` | sets `control` argument for Stan call            |
-|                             | `stepsize=0.1`)          |                                                  |
-| `OncoBayes2.MC.backend`     | rstan                    | Backend used to run Stan (`rstan` or `cmdstanr`) |
-| `OncoBayes2.abbreviate.min` | 0                        | Minimal length of variable names                 |
-|                             |                          | when abbreviating variable names.                |
-|                             |                          | The default 0 disables abbreviation.             |
+|  |  |  |
+|----|----|----|
+| Option | Default | Description |
+| `OncoBayes2.MC.warmup` | 1000 | MCMC warmup iterations |
+| `OncoBayes2.MC.iter` | 2000 | total MCMC iterations |
+| `OncoBayes2.MC.save_warmup` | TRUE | save warmup samples |
+| `OncoBayes2.MC.chains` | 4 | MCMC chains |
+| `OncoBayes2.MC.thin` | 1 | MCMC thinning |
+| `OncoBayes2.MC.control` | `list(adapt_delta=0.99,` | sets `control` argument for Stan call |
+|  | `stepsize=0.1`) |  |
+| `OncoBayes2.MC.backend` | rstan | Backend used to run Stan (`rstan` or `cmdstanr`) |
+| `OncoBayes2.abbreviate.min` | 0 | Minimal length of variable names |
+|  |  | when abbreviating variable names. |
+|  |  | The default 0 disables abbreviation. |
 
 ## References
 

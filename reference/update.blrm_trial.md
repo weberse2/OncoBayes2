@@ -125,9 +125,6 @@ example_model("combo2_trial")
 #> 
 #> No stratum defined - assigning all groups to single stratum "all"
 #> Please configure blrm_exnex using the update() function.
-#> Warning: There were 10 transitions after warmup that exceeded the maximum treedepth. Increase max_treedepth above 10. See
-#> https://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
-#> Warning: Examine the pairs() plot to diagnose sampling problems
 #> Warning: The largest R-hat is NA, indicating chains have not mixed.
 #> Running the chains for more iterations may help. See
 #> https://mc-stan.org/misc/warnings.html#r-hat
@@ -137,12 +134,12 @@ example_model("combo2_trial")
 #> Warning: Tail Effective Samples Size (ESS) is too low, indicating posterior variances and tail quantiles may be unreliable.
 #> Running the chains for more iterations may help. See
 #> https://mc-stan.org/misc/warnings.html#tail-ess
-#> Warning: 11 out of 42 ewoc metrics have not converged (some Rhats are > 1.1).
+#> Warning: 4 out of 42 ewoc metrics have not converged (some Rhats are > 1.1).
 #> Be careful when analysing the results! It is recommended to run
 #> more iterations and/or setting stronger priors.
 #> You may call "summary(trial, summarize='ewoc_check', ...)" for more diagnostic details.
 #> Please call "help('blrm_trial', help_type='summary')" for further documentation.
-#> Warning: 22 out of 42 ewoc metrics are within the 95% MCMC error of the decision boundary.
+#> Warning: 25 out of 42 ewoc metrics are within the 95% MCMC error of the decision boundary.
 #> Be careful when using the imprecise ewoc estimates! It is recommended to run
 #> more iterations and review doses close to critical thresholds.
 #> You may call "summary(trial, summarize='ewoc_check', ...)" for more diagnostic details.
@@ -157,12 +154,12 @@ example_model("combo2_trial")
 #> Warning: Tail Effective Samples Size (ESS) is too low, indicating posterior variances and tail quantiles may be unreliable.
 #> Running the chains for more iterations may help. See
 #> https://mc-stan.org/misc/warnings.html#tail-ess
-#> Warning: 16 out of 42 ewoc metrics have not converged (some Rhats are > 1.1).
+#> Warning: 19 out of 42 ewoc metrics have not converged (some Rhats are > 1.1).
 #> Be careful when analysing the results! It is recommended to run
 #> more iterations and/or setting stronger priors.
 #> You may call "summary(trial, summarize='ewoc_check', ...)" for more diagnostic details.
 #> Please call "help('blrm_trial', help_type='summary')" for further documentation.
-#> Warning: 7 out of 42 ewoc metrics are within the 95% MCMC error of the decision boundary.
+#> Warning: 11 out of 42 ewoc metrics are within the 95% MCMC error of the decision boundary.
 #> Be careful when using the imprecise ewoc estimates! It is recommended to run
 #> more iterations and review doses close to critical thresholds.
 #> You may call "summary(trial, summarize='ewoc_check', ...)" for more diagnostic details.

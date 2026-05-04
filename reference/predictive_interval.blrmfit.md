@@ -64,10 +64,10 @@ example_model("single_agent", silent = TRUE)
 
 predictive_interval(blrmfit)
 #>   2.5% 97.5%
-#> 1    0     1
+#> 1    0     0
 #> 2    0     1
 #> 3    0     2
-#> 4    0     2
+#> 4    0     3
 #> 5    0     2
 
 ## Recover user set sampling defaults

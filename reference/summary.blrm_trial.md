@@ -173,12 +173,12 @@ combo2_trial_setup <- blrm_trial(
 #> Warning: Tail Effective Samples Size (ESS) is too low, indicating posterior variances and tail quantiles may be unreliable.
 #> Running the chains for more iterations may help. See
 #> https://mc-stan.org/misc/warnings.html#tail-ess
-#> Warning: 12 out of 42 ewoc metrics have not converged (some Rhats are > 1.1).
+#> Warning: 27 out of 42 ewoc metrics have not converged (some Rhats are > 1.1).
 #> Be careful when analysing the results! It is recommended to run
 #> more iterations and/or setting stronger priors.
 #> You may call "summary(trial, summarize='ewoc_check', ...)" for more diagnostic details.
 #> Please call "help('blrm_trial', help_type='summary')" for further documentation.
-#> Warning: 32 out of 42 ewoc metrics are within the 95% MCMC error of the decision boundary.
+#> Warning: 26 out of 42 ewoc metrics are within the 95% MCMC error of the decision boundary.
 #> Be careful when using the imprecise ewoc estimates! It is recommended to run
 #> more iterations and review doses close to critical thresholds.
 #> You may call "summary(trial, summarize='ewoc_check', ...)" for more diagnostic details.
@@ -202,12 +202,12 @@ summary(combo2_trial_setup, "blrm_exnex_call")
 
 # extract ewoc precision accuracy
 ec <- summary(combo2_trial_setup, "ewoc_check")
-#> Warning: 12 out of 42 ewoc metrics have not converged (some Rhats are > 1.1).
+#> Warning: 27 out of 42 ewoc metrics have not converged (some Rhats are > 1.1).
 #> Be careful when analysing the results! It is recommended to run
 #> more iterations and/or setting stronger priors.
 #> You may call "summary(trial, summarize='ewoc_check', ...)" for more diagnostic details.
 #> Please call "help('blrm_trial', help_type='summary')" for further documentation.
-#> Warning: 32 out of 42 ewoc metrics are within the 95% MCMC error of the decision boundary.
+#> Warning: 26 out of 42 ewoc metrics are within the 95% MCMC error of the decision boundary.
 #> Be careful when using the imprecise ewoc estimates! It is recommended to run
 #> more iterations and review doses close to critical thresholds.
 #> You may call "summary(trial, summarize='ewoc_check', ...)" for more diagnostic details.
@@ -216,20 +216,20 @@ ec <- summary(combo2_trial_setup, "ewoc_check")
 # find any ewoc metrics which are within 95% MCMC error of the threshold
 # these are counted as "imprecise" when printing blrm_trial objects
 subset(ec, abs(prob_overdose_stat) < qnorm(0.975))
-#> # A tibble: 32 × 10
+#> # A tibble: 26 × 10
 #>    group_id drug_A drug_B dose_id stratum_id prob_overdose_est
 #>    <fct>     <dbl>  <dbl>   <int> <fct>                  <dbl>
-#>  1 trial_A     6        0       3 all                    0.272
-#>  2 trial_A     8        0       4 all                    0.381
-#>  3 IIT         3        0       8 all                    0.133
-#>  4 IIT         3      400       9 all                    0.201
-#>  5 IIT         3      600      10 all                    0.248
-#>  6 IIT         3      800      11 all                    0.311
-#>  7 IIT         4.5      0      12 all                    0.173
-#>  8 IIT         4.5    400      13 all                    0.256
-#>  9 IIT         4.5    600      14 all                    0.310
-#> 10 IIT         4.5    800      15 all                    0.366
-#> # ℹ 22 more rows
+#>  1 trial_A     6        0       3 all                    0.181
+#>  2 trial_A     8        0       4 all                    0.441
+#>  3 IIT         3      600      10 all                    0.109
+#>  4 IIT         3      800      11 all                    0.161
+#>  5 IIT         4.5    600      14 all                    0.168
+#>  6 IIT         4.5    800      15 all                    0.216
+#>  7 IIT         6        0      16 all                    0.173
+#>  8 IIT         6      400      17 all                    0.238
+#>  9 IIT         6      600      18 all                    0.289
+#> 10 IIT         6      800      19 all                    0.406
+#> # ℹ 16 more rows
 #> # ℹ 4 more variables: prob_overdose_stat <dbl>, prob_overdose_mcse <dbl>,
 #> #   prob_overdose_ess <dbl>, prob_overdose_rhat <dbl>
 

@@ -291,12 +291,12 @@ combo2_trial_setup <- blrm_trial(
 #> Warning: Tail Effective Samples Size (ESS) is too low, indicating posterior variances and tail quantiles may be unreliable.
 #> Running the chains for more iterations may help. See
 #> https://mc-stan.org/misc/warnings.html#tail-ess
-#> Warning: 14 out of 42 ewoc metrics have not converged (some Rhats are > 1.1).
+#> Warning: 4 out of 42 ewoc metrics have not converged (some Rhats are > 1.1).
 #> Be careful when analysing the results! It is recommended to run
 #> more iterations and/or setting stronger priors.
 #> You may call "summary(trial, summarize='ewoc_check', ...)" for more diagnostic details.
 #> Please call "help('blrm_trial', help_type='summary')" for further documentation.
-#> Warning: 19 out of 42 ewoc metrics are within the 95% MCMC error of the decision boundary.
+#> Warning: 25 out of 42 ewoc metrics are within the 95% MCMC error of the decision boundary.
 #> Be careful when using the imprecise ewoc estimates! It is recommended to run
 #> more iterations and review doses close to critical thresholds.
 #> You may call "summary(trial, summarize='ewoc_check', ...)" for more diagnostic details.

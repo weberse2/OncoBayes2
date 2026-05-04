@@ -594,6 +594,9 @@ example_model("combo3")
 #>    prior_tau_dist = 1,
 #>    prior_PD = FALSE
 #>  )
+#> Warning: There were 2 transitions after warmup that exceeded the maximum treedepth. Increase max_treedepth above 10. See
+#> https://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
+#> Warning: Examine the pairs() plot to diagnose sampling problems
 #> Warning: The largest R-hat is NA, indicating chains have not mixed.
 #> Running the chains for more iterations may help. See
 #> https://mc-stan.org/misc/warnings.html#r-hat
@@ -742,218 +745,209 @@ print(blrmfit)
 #> Component posterior:
 #> Population mean posterior mu_log_beta
 #> intercept:
-#>                         mean se_mean   sd 2.5%   50% 97.5% n_eff Rhat
-#> I(log(drug_A/dref[1])) -1.56    0.43 1.35 -3.8 -1.38  0.50  10.0 0.92
-#> I(log(drug_B/dref[2])) -3.09    0.23 0.74 -4.0 -3.18 -1.97  10.0 0.92
-#> I(log(drug_C/dref[3])) -0.68    0.24 0.73 -1.7 -0.63  0.51   9.1 0.91
+#>                         mean se_mean  sd 2.5%   50% 97.5% n_eff Rhat
+#> I(log(drug_A/dref[1])) -1.44    0.37 1.2 -3.2 -1.06  0.22    10 0.90
+#> I(log(drug_B/dref[2])) -3.21    0.25 0.8 -4.5 -3.01 -2.24    10 0.93
+#> I(log(drug_C/dref[3])) -0.53    0.22 0.7 -1.5 -0.31  0.45    10 0.90
 #> log-slope:
-#>                         mean se_mean   sd  2.5%   50% 97.5% n_eff Rhat
-#> I(log(drug_A/dref[1]))  0.12    0.31 0.93 -0.51 -0.17   2.1   9.0  1.2
-#> I(log(drug_B/dref[2])) -0.18    0.33 1.04 -1.66 -0.13   1.3  10.0  0.9
-#> I(log(drug_C/dref[3]))  0.44    0.22 0.65 -0.75  0.59   1.3   8.7  1.4
+#>                        mean se_mean   sd  2.5%  50% 97.5% n_eff Rhat
+#> I(log(drug_A/dref[1])) 0.13    0.28 0.89 -1.42 0.12  1.30    10 0.91
+#> I(log(drug_B/dref[2])) 0.13    0.19 0.60 -0.75 0.42  0.89    10 1.03
+#> I(log(drug_C/dref[3])) 0.40    0.33 1.05 -1.39 0.61  1.68    10 0.90
 #> 
 #> Population heterogeniety posterior tau_log_beta
 #> intercept:
-#>                            mean se_mean   sd 2.5%  50% 97.5% n_eff Rhat
-#> BID,I(log(drug_A/dref[1])) 0.28   0.057 0.18 0.11 0.23  0.63  10.0 0.94
-#> BID,I(log(drug_B/dref[2])) 0.65   0.311 0.80 0.12 0.30  2.34   6.7 1.17
-#> BID,I(log(drug_C/dref[3])) 0.26   0.052 0.17 0.09 0.26  0.59  10.0 1.27
-#> QD,I(log(drug_A/dref[1]))  0.67   0.236 0.75 0.11 0.40  2.10  10.0 0.99
-#> QD,I(log(drug_B/dref[2]))  0.52   0.098 0.31 0.21 0.41  0.99  10.0 0.93
-#> QD,I(log(drug_C/dref[3]))  0.48   0.086 0.27 0.25 0.33  0.95  10.0 1.11
+#>                            mean se_mean   sd  2.5%  50% 97.5% n_eff Rhat
+#> BID,I(log(drug_A/dref[1])) 0.30   0.039 0.12 0.151 0.29  0.48    10 0.90
+#> BID,I(log(drug_B/dref[2])) 0.58   0.184 0.58 0.043 0.26  1.49    10 1.08
+#> BID,I(log(drug_C/dref[3])) 0.44   0.110 0.35 0.072 0.33  1.06    10 1.04
+#> QD,I(log(drug_A/dref[1]))  0.48   0.086 0.27 0.190 0.32  0.91    10 0.89
+#> QD,I(log(drug_B/dref[2]))  0.50   0.126 0.40 0.164 0.26  1.14    10 0.96
+#> QD,I(log(drug_C/dref[3]))  0.74   0.181 0.57 0.164 0.63  1.78    10 0.92
 #> log-slope:
-#>                            mean se_mean    sd  2.5%  50% 97.5% n_eff Rhat
-#> BID,I(log(drug_A/dref[1])) 0.17   0.039 0.122 0.059 0.14  0.42    10 0.92
-#> BID,I(log(drug_B/dref[2])) 0.24   0.080 0.253 0.078 0.15  0.78    10 0.98
-#> BID,I(log(drug_C/dref[3])) 0.16   0.027 0.082 0.055 0.14  0.32     9 1.37
-#> QD,I(log(drug_A/dref[1]))  0.20   0.028 0.088 0.076 0.20  0.34    10 1.07
-#> QD,I(log(drug_B/dref[2]))  0.26   0.055 0.173 0.105 0.20  0.62    10 0.95
-#> QD,I(log(drug_C/dref[3]))  0.37   0.075 0.237 0.105 0.31  0.74    10 0.89
+#>                            mean se_mean   sd  2.5%   50% 97.5% n_eff Rhat
+#> BID,I(log(drug_A/dref[1])) 0.15   0.036 0.11 0.045 0.126  0.40  10.0 0.94
+#> BID,I(log(drug_B/dref[2])) 0.19   0.073 0.23 0.025 0.048  0.62  10.0 0.96
+#> BID,I(log(drug_C/dref[3])) 0.18   0.032 0.08 0.092 0.151  0.29   6.4 1.20
+#> QD,I(log(drug_A/dref[1]))  0.29   0.052 0.16 0.106 0.277  0.50  10.0 0.95
+#> QD,I(log(drug_B/dref[2]))  0.48   0.147 0.46 0.047 0.355  1.24  10.0 1.01
+#> QD,I(log(drug_C/dref[3]))  0.28   0.049 0.16 0.117 0.238  0.58  10.0 0.90
 #> 
 #> Population correlation posterior rho_log_beta
-#>                          mean se_mean   sd  2.5%    50% 97.5% n_eff Rhat
-#> I(log(drug_A/dref[1]))  0.193    0.14 0.45 -0.41 0.0392  0.94  10.0  0.9
-#> I(log(drug_B/dref[2])) -0.069    0.30 0.81 -0.97 0.0300  0.97   7.2  1.6
-#> I(log(drug_C/dref[3])) -0.006    0.14 0.43 -0.62 0.0066  0.66  10.0  0.9
+#>                          mean se_mean   sd  2.5%   50% 97.5% n_eff Rhat
+#> I(log(drug_A/dref[1])) -0.048    0.21 0.68 -0.88 -0.25  0.92    10  1.1
+#> I(log(drug_B/dref[2]))  0.093    0.24 0.75 -0.90  0.23  0.97    10  1.0
+#> I(log(drug_C/dref[3]))  0.136    0.15 0.49 -0.69  0.33  0.75    10  0.9
 #> 
 #> Interaction model posterior:
 #> Population mean posterior mu_eta
-#>                                                       mean se_mean   sd  2.5%
-#> I(drug_A/dref[1] * drug_B/dref[2])                  -0.503    0.20 0.63 -1.34
-#> I(drug_A/dref[1] * drug_C/dref[3])                   0.210    0.19 0.61 -0.47
-#> I(drug_B/dref[2] * drug_C/dref[3])                  -0.028    0.20 0.65 -1.13
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])  0.356    0.16 0.52 -0.52
+#>                                                      mean se_mean   sd  2.5%
+#> I(drug_A/dref[1] * drug_B/dref[2])                  -0.47    0.22 0.69 -1.36
+#> I(drug_A/dref[1] * drug_C/dref[3])                   0.18    0.22 0.70 -0.81
+#> I(drug_B/dref[2] * drug_C/dref[3])                   0.11    0.10 0.32 -0.49
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])  0.12    0.14 0.44 -0.48
 #>                                                       50% 97.5% n_eff Rhat
-#> I(drug_A/dref[1] * drug_B/dref[2])                  -0.61  0.41    10 0.90
-#> I(drug_A/dref[1] * drug_C/dref[3])                  -0.10  1.07    10 0.99
-#> I(drug_B/dref[2] * drug_C/dref[3])                   0.20  0.70    10 0.90
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])  0.41  1.01    10 1.48
+#> I(drug_A/dref[1] * drug_B/dref[2])                  -0.61  0.73    10 0.91
+#> I(drug_A/dref[1] * drug_C/dref[3])                   0.23  1.08    10 1.01
+#> I(drug_B/dref[2] * drug_C/dref[3])                   0.17  0.46    10 0.92
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])  0.11  0.72    10 0.93
 #> 
 #> Population heterogeniety posterior tau_eta
-#>                                                         mean se_mean    sd
-#> BID,I(drug_A/dref[1] * drug_B/dref[2])                  0.23   0.056 0.179
-#> BID,I(drug_A/dref[1] * drug_C/dref[3])                  0.22   0.032 0.101
-#> BID,I(drug_B/dref[2] * drug_C/dref[3])                  0.29   0.024 0.071
-#> BID,I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]) 0.25   0.023 0.073
-#> QD,I(drug_A/dref[1] * drug_B/dref[2])                   0.26   0.040 0.094
-#> QD,I(drug_A/dref[1] * drug_C/dref[3])                   0.31   0.031 0.099
-#> QD,I(drug_B/dref[2] * drug_C/dref[3])                   0.21   0.021 0.049
-#> QD,I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])  0.25   0.030 0.093
-#>                                                          2.5%  50% 97.5% n_eff
-#> BID,I(drug_A/dref[1] * drug_B/dref[2])                  0.097 0.15  0.59  10.0
-#> BID,I(drug_A/dref[1] * drug_C/dref[3])                  0.131 0.21  0.43  10.0
-#> BID,I(drug_B/dref[2] * drug_C/dref[3])                  0.220 0.28  0.43   8.4
-#> BID,I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]) 0.149 0.25  0.38  10.0
-#> QD,I(drug_A/dref[1] * drug_B/dref[2])                   0.178 0.21  0.43   5.6
-#> QD,I(drug_A/dref[1] * drug_C/dref[3])                   0.144 0.33  0.42  10.0
-#> QD,I(drug_B/dref[2] * drug_C/dref[3])                   0.137 0.21  0.27   5.5
-#> QD,I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])  0.138 0.23  0.43  10.0
-#>                                                         Rhat
-#> BID,I(drug_A/dref[1] * drug_B/dref[2])                  0.91
-#> BID,I(drug_A/dref[1] * drug_C/dref[3])                  0.90
-#> BID,I(drug_B/dref[2] * drug_C/dref[3])                  1.14
-#> BID,I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]) 0.90
-#> QD,I(drug_A/dref[1] * drug_B/dref[2])                   0.92
-#> QD,I(drug_A/dref[1] * drug_C/dref[3])                   0.90
-#> QD,I(drug_B/dref[2] * drug_C/dref[3])                   1.56
-#> QD,I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])  0.90
+#>                                                         mean se_mean    sd 2.5%
+#> BID,I(drug_A/dref[1] * drug_B/dref[2])                  0.25   0.021 0.061 0.16
+#> BID,I(drug_A/dref[1] * drug_C/dref[3])                  0.23   0.026 0.082 0.14
+#> BID,I(drug_B/dref[2] * drug_C/dref[3])                  0.35   0.043 0.136 0.18
+#> BID,I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]) 0.22   0.017 0.055 0.16
+#> QD,I(drug_A/dref[1] * drug_B/dref[2])                   0.25   0.025 0.080 0.16
+#> QD,I(drug_A/dref[1] * drug_C/dref[3])                   0.23   0.053 0.168 0.11
+#> QD,I(drug_B/dref[2] * drug_C/dref[3])                   0.28   0.020 0.063 0.20
+#> QD,I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])  0.21   0.040 0.103 0.15
+#>                                                          50% 97.5% n_eff Rhat
+#> BID,I(drug_A/dref[1] * drug_B/dref[2])                  0.24  0.34   8.1 1.12
+#> BID,I(drug_A/dref[1] * drug_C/dref[3])                  0.21  0.37  10.0 0.94
+#> BID,I(drug_B/dref[2] * drug_C/dref[3])                  0.34  0.62  10.0 1.25
+#> BID,I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]) 0.21  0.33  10.0 1.41
+#> QD,I(drug_A/dref[1] * drug_B/dref[2])                   0.25  0.39  10.0 0.90
+#> QD,I(drug_A/dref[1] * drug_C/dref[3])                   0.16  0.60  10.0 0.98
+#> QD,I(drug_B/dref[2] * drug_C/dref[3])                   0.26  0.37  10.0 0.93
+#> QD,I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])  0.17  0.42   6.6 1.34
 #> 
 #> Population correlation posterior Sigma_corr_eta
 #>                                                                                                           mean
 #> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_B/dref[2])                                    1.000
-#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_C/dref[3])                                   -0.037
-#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_B/dref[2] * drug_C/dref[3])                                   -0.024
-#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  -0.014
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                   -0.037
+#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_C/dref[3])                                    0.072
+#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_B/dref[2] * drug_C/dref[3])                                   -0.044
+#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  -0.031
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                    0.072
 #> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                    1.000
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                    0.239
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  -0.213
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                   -0.024
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                    0.239
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                   -0.110
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                   0.045
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                   -0.044
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                   -0.110
 #> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                    1.000
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                   0.068
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                  -0.014
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                  -0.213
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                   0.068
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  -0.037
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                  -0.031
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                   0.045
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                  -0.037
 #> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])  1.000
 #>                                                                                                         se_mean
 #> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_B/dref[2])                                       NaN
-#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_C/dref[3])                                   2.1e-01
-#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_B/dref[2] * drug_C/dref[3])                                   1.9e-01
-#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  8.7e-02
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                   2.1e-01
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                   2.9e-17
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                   1.3e-01
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  1.6e-01
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                   1.9e-01
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                   1.3e-01
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                   3.3e-17
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  1.1e-01
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                  8.7e-02
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                  1.6e-01
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                  1.1e-01
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]) 2.1e-17
+#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_C/dref[3])                                   1.1e-01
+#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_B/dref[2] * drug_C/dref[3])                                   5.1e-02
+#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  5.3e-02
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                   1.1e-01
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                   1.2e-17
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                   1.7e-01
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  8.5e-02
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                   5.1e-02
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                   1.7e-01
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                   2.3e-17
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  2.0e-01
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                  5.3e-02
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                  8.5e-02
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                  2.0e-01
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]) 3.4e-17
 #>                                                                                                              sd
 #> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_B/dref[2])                                   0.0e+00
-#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_C/dref[3])                                   6.6e-01
-#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_B/dref[2] * drug_C/dref[3])                                   5.9e-01
-#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  2.8e-01
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                   6.6e-01
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                   9.1e-17
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                   3.7e-01
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  5.0e-01
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                   5.9e-01
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                   3.7e-01
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                   1.0e-16
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  3.4e-01
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                  2.8e-01
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                  5.0e-01
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                  3.4e-01
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]) 5.2e-17
+#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_C/dref[3])                                   3.5e-01
+#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_B/dref[2] * drug_C/dref[3])                                   1.6e-01
+#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  1.7e-01
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                   3.5e-01
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                   3.7e-17
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                   5.5e-01
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  2.7e-01
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                   1.6e-01
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                   5.5e-01
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                   7.4e-17
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  6.4e-01
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                  1.7e-01
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                  2.7e-01
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                  6.4e-01
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]) 8.3e-17
 #>                                                                                                          2.5%
 #> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_B/dref[2])                                    1.00
-#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_C/dref[3])                                   -0.89
-#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_B/dref[2] * drug_C/dref[3])                                   -0.69
-#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  -0.39
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                   -0.89
+#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_C/dref[3])                                   -0.47
+#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_B/dref[2] * drug_C/dref[3])                                   -0.34
+#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  -0.28
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                   -0.47
 #> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                    1.00
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                   -0.35
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  -0.67
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                   -0.69
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                   -0.35
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                   -0.86
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  -0.33
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                   -0.34
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                   -0.86
 #> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                    1.00
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  -0.48
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                  -0.39
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                  -0.67
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                  -0.48
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  -0.80
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                  -0.28
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                  -0.33
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                  -0.80
 #> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])  1.00
 #>                                                                                                            50%
 #> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_B/dref[2])                                    1.000
-#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_C/dref[3])                                   -0.023
-#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_B/dref[2] * drug_C/dref[3])                                   -0.225
-#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  -0.050
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                   -0.023
+#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_C/dref[3])                                    0.106
+#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_B/dref[2] * drug_C/dref[3])                                    0.019
+#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                   0.012
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                    0.106
 #> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                    1.000
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                    0.283
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  -0.390
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                   -0.225
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                    0.283
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                   -0.198
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                   0.026
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                    0.019
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                   -0.198
 #> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                    1.000
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                   0.121
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                  -0.050
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                  -0.390
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                   0.121
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  -0.280
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                   0.012
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                   0.026
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                  -0.280
 #> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])  1.000
 #>                                                                                                         97.5%
 #> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_B/dref[2])                                    1.00
-#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_C/dref[3])                                    0.85
-#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_B/dref[2] * drug_C/dref[3])                                    0.71
-#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                   0.39
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                    0.85
+#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_C/dref[3])                                    0.61
+#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_B/dref[2] * drug_C/dref[3])                                    0.11
+#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                   0.17
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                    0.61
 #> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                    1.00
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                    0.72
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                   0.66
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                    0.71
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                    0.72
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                    0.76
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                   0.36
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                    0.11
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                    0.76
 #> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                    1.00
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                   0.51
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                   0.39
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                   0.66
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                   0.51
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                   0.91
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                   0.17
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                   0.36
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                   0.91
 #> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])  1.00
 #>                                                                                                         n_eff
 #> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_B/dref[2])                                     NaN
-#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_C/dref[3])                                    10.0
-#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_B/dref[2] * drug_C/dref[3])                                    10.0
-#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                   10.0
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                    10.0
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                    10.0
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                     8.0
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                   10.0
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                    10.0
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                     8.0
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                    10.0
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                   10.0
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                   10.0
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                   10.0
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                   10.0
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])   6.3
+#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_C/dref[3])                                      10
+#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_B/dref[2] * drug_C/dref[3])                                      10
+#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                     10
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                      10
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                      10
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                      10
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                     10
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                      10
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                      10
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                      10
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                     10
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                     10
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                     10
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                     10
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])     6
 #>                                                                                                         Rhat
 #> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_B/dref[2])                                    NaN
-#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_C/dref[3])                                   0.94
-#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_B/dref[2] * drug_C/dref[3])                                   0.92
-#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  0.90
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                   0.94
+#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_C/dref[3])                                   0.93
+#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_B/dref[2] * drug_C/dref[3])                                   0.90
+#> I(drug_A/dref[1] * drug_B/dref[2]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  0.91
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                   0.93
 #> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                   0.89
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                   1.01
-#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  1.17
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                   0.92
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                   1.01
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                   0.90
+#> I(drug_A/dref[1] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  1.03
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                                   0.90
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                                   0.90
 #> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                                   0.89
-#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  1.16
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                  0.90
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                  1.17
-#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                  1.16
+#> I(drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3])                  0.90
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2])                  0.91
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_C/dref[3])                  1.03
+#> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_B/dref[2] * drug_C/dref[3])                  0.90
 #> I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]),I(drug_A/dref[1] * drug_B/dref[2] * drug_C/dref[3]) 0.89
 #> Warning: Parts of the model have not converged (some Rhats are > 1.1).
 #> Be careful when analysing the results! It is recommend to run
@@ -981,44 +975,44 @@ print(cbind(hist_combo3, summ))
 #> 16         QD HistAgent2    400      0    160              1            6
 #> 17         QD HistAgent2    400      0    320              2            5
 #> 18         QD HistAgent2    400      0    240              1            1
-#>          mean         sd         2.5%        50%      97.5% [0,0.16]
-#> 1  0.15763035 0.05249890 0.0788935468 0.15386253 0.23775325      0.6
-#> 2  0.18049107 0.06426261 0.0967196390 0.17314636 0.28667184      0.5
-#> 3  0.20548523 0.07597862 0.1093537954 0.19694823 0.32983900      0.3
-#> 4  0.01694962 0.01517327 0.0002702704 0.01471781 0.04570499      1.0
-#> 5  0.02674302 0.02086952 0.0031741245 0.02241720 0.06811877      1.0
-#> 6  0.08019912 0.05108842 0.0214118296 0.08389474 0.14499121      1.0
-#> 7  0.12219773 0.10787006 0.0033342835 0.11643727 0.30511285      0.6
-#> 8  0.13319085 0.08116821 0.0364489312 0.14272116 0.25594805      0.7
-#> 9  0.10739850 0.04876519 0.0419003297 0.10383520 0.18253735      0.9
-#> 10 0.10656435 0.05387841 0.0411395761 0.09668417 0.20920996      0.9
-#> 11 0.01577683 0.01562399 0.0004452036 0.01181081 0.04403863      1.0
-#> 12 0.03409630 0.02408099 0.0017825166 0.03279358 0.07007867      1.0
-#> 13 0.08200248 0.04426954 0.0082446535 0.08279723 0.14439985      1.0
-#> 14 0.14091971 0.07121965 0.0293088684 0.14135581 0.22605819      0.7
-#> 15 0.20816371 0.09586503 0.0922844339 0.20206875 0.34228233      0.4
-#> 16 0.20779780 0.10857143 0.0862082526 0.17852808 0.39193461      0.4
-#> 17 0.25223444 0.08337001 0.1434467908 0.24298442 0.39014378      0.1
-#> 18 0.22835057 0.09570861 0.1164104578 0.20972589 0.39135373      0.3
+#>          mean         sd         2.5%         50%      97.5% [0,0.16]
+#> 1  0.20371098 0.07733550 9.620129e-02 0.201822163 0.31968567      0.3
+#> 2  0.22361330 0.08007056 1.098705e-01 0.227943497 0.33955953      0.2
+#> 3  0.24476545 0.08390434 1.264024e-01 0.253043507 0.36250684      0.2
+#> 4  0.01703650 0.01085987 2.704102e-03 0.015709715 0.03293509      1.0
+#> 5  0.03253753 0.02215977 4.940107e-03 0.029305529 0.07052722      1.0
+#> 6  0.08482887 0.06988129 9.477103e-03 0.080687466 0.19800189      0.8
+#> 7  0.08146756 0.09038718 1.074730e-02 0.039476231 0.26672691      0.8
+#> 8  0.13560027 0.07384235 5.530077e-02 0.109265821 0.25538344      0.6
+#> 9  0.12164949 0.05012800 6.007321e-02 0.110126570 0.21385390      0.8
+#> 10 0.11992114 0.06138381 5.630877e-02 0.094002190 0.23095714      0.7
+#> 11 0.02545156 0.04149528 2.894899e-05 0.004400239 0.11155608      1.0
+#> 12 0.04024950 0.06449306 3.633123e-04 0.012684074 0.17771327      0.9
+#> 13 0.06864600 0.09319206 3.864447e-03 0.034094033 0.27053479      0.9
+#> 14 0.10557835 0.10764986 1.051573e-02 0.075278930 0.33633626      0.8
+#> 15 0.15816416 0.11867879 3.671271e-02 0.128517617 0.39144890      0.6
+#> 16 0.30206204 0.15060725 1.601939e-01 0.256111022 0.59069877      0.1
+#> 17 0.32930774 0.13994434 1.998291e-01 0.289977332 0.59712922      0.0
+#> 18 0.31525645 0.14517816 1.756684e-01 0.264551860 0.59125717      0.0
 #>    (0.16,0.33] (0.33,1]
-#> 1          0.4      0.0
-#> 2          0.5      0.0
-#> 3          0.6      0.1
+#> 1          0.7      0.0
+#> 2          0.7      0.1
+#> 3          0.7      0.1
 #> 4          0.0      0.0
 #> 5          0.0      0.0
-#> 6          0.0      0.0
-#> 7          0.4      0.0
-#> 8          0.3      0.0
-#> 9          0.1      0.0
-#> 10         0.1      0.0
+#> 6          0.2      0.0
+#> 7          0.2      0.0
+#> 8          0.4      0.0
+#> 9          0.2      0.0
+#> 10         0.3      0.0
 #> 11         0.0      0.0
-#> 12         0.0      0.0
-#> 13         0.0      0.0
-#> 14         0.3      0.0
-#> 15         0.5      0.1
-#> 16         0.4      0.2
-#> 17         0.7      0.2
-#> 18         0.5      0.2
+#> 12         0.1      0.0
+#> 13         0.1      0.0
+#> 14         0.1      0.1
+#> 15         0.3      0.1
+#> 16         0.6      0.3
+#> 17         0.7      0.3
+#> 18         0.7      0.3
 
 # summary of posterior for DLT rate by dose for new set of covariate levels
 newdata <- expand.grid(
@@ -1029,15 +1023,15 @@ newdata <- expand.grid(
 summ_pred <- summary(blrmfit, newdata = newdata, interval_prob = c(0, 0.16, 0.33, 1))
 print(cbind(newdata, summ_pred))
 #>   stratum_id group_id drug_A drug_B drug_C      mean         sd      2.5%
-#> 1        BID    Combo    400    800    320 0.2332778 0.08904148 0.1206098
-#> 2        BID    Combo    400    800    400 0.2638937 0.10505501 0.1308699
-#> 3        BID    Combo    400    800    600 0.3497262 0.15767879 0.1531685
-#> 4        BID    Combo    400    800    800 0.4400316 0.20652868 0.1714653
+#> 1        BID    Combo    400    800    320 0.2680163 0.08890877 0.1474356
+#> 2        BID    Combo    400    800    400 0.2944229 0.09540909 0.1669803
+#> 3        BID    Combo    400    800    600 0.3784127 0.12889709 0.2023964
+#> 4        BID    Combo    400    800    800 0.4778682 0.18929560 0.2046738
 #>         50%     97.5% [0,0.16] (0.16,0.33] (0.33,1]
-#> 1 0.2419234 0.3678581      0.3         0.6      0.1
-#> 2 0.2971380 0.4041882      0.3         0.4      0.3
-#> 3 0.3855898 0.5462626      0.1         0.3      0.6
-#> 4 0.4704068 0.7417759      0.0         0.4      0.6
+#> 1 0.2663310 0.3939148      0.1         0.6      0.3
+#> 2 0.2912059 0.4390051      0.0         0.6      0.4
+#> 3 0.3844232 0.5885953      0.0         0.3      0.7
+#> 4 0.4780968 0.7661702      0.0         0.2      0.8
 
 # update the model after observing additional data
 newdata$num_patients <- rep(3, nrow(newdata))
@@ -1073,16 +1067,16 @@ print(cbind(newdata, summ_upd))
 #> 2        BID    Combo    400    800    400            3              1
 #> 3        BID    Combo    400    800    600            3              2
 #> 4        BID    Combo    400    800    800            3              2
-#>        mean        sd      2.5%       50%     97.5% [0,0.16] (0.16,0.33]
-#> 1 0.2964530 0.1020539 0.1681743 0.3159403 0.4718398        0         0.7
-#> 2 0.3352460 0.1242714 0.1751319 0.3529986 0.5560451        0         0.4
-#> 3 0.4375843 0.1713431 0.1808415 0.4518160 0.7224272        0         0.2
-#> 4 0.5439770 0.2113270 0.1867277 0.5662284 0.8322125        0         0.2
+#>        mean         sd      2.5%       50%     97.5% [0,0.16] (0.16,0.33]
+#> 1 0.2866255 0.08415192 0.1530756 0.3084664 0.3915255      0.2         0.5
+#> 2 0.3401901 0.09704336 0.1798541 0.3576501 0.4586301      0.0         0.4
+#> 3 0.4992189 0.13063222 0.2828894 0.5138069 0.6708180      0.0         0.1
+#> 4 0.6575665 0.14815459 0.4446452 0.6602006 0.8403893      0.0         0.0
 #>   (0.33,1]
 #> 1      0.3
 #> 2      0.6
-#> 3      0.8
-#> 4      0.8
+#> 3      0.9
+#> 4      1.0
 ## Recover user set sampling defaults
 options(.user_mc_options)
 ```

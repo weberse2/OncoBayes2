@@ -67,12 +67,12 @@ example_model("single_agent", silent = TRUE)
 
 head(log_posterior(blrmfit))
 #>   Chain Iteration     Value
-#> 1     1         1 -17.00453
-#> 2     1         2 -15.89877
-#> 3     1         3 -13.37728
-#> 4     1         4 -13.70039
-#> 5     1         5 -15.04728
-#> 6     1         6 -18.13408
+#> 1     1         1 -16.69994
+#> 2     1         2 -16.06782
+#> 3     1         3 -18.38362
+#> 4     1         4 -19.69286
+#> 5     1         5 -15.25626
+#> 6     1         6 -16.01229
 
 np <- nuts_params(blrmfit)
 str(np)
@@ -80,37 +80,37 @@ str(np)
 #>  $ Chain    : int  1 1 1 1 1 1 1 1 1 1 ...
 #>  $ Iteration: int  1 2 3 4 5 6 7 8 9 10 ...
 #>  $ Parameter: Factor w/ 6 levels "accept_stat__",..: 1 1 1 1 1 1 1 1 1 1 ...
-#>  $ Value    : num  0.999 1 0.999 0.997 1 ...
+#>  $ Value    : num  0.998 0.995 0.999 0.998 0.994 ...
 # extract the number of divergence transitions
 sum(subset(np, Parameter == "divergent__")$Value)
 #> [1] 0
 
 head(rhat(blrmfit))
 #>        mu_log_beta[log(drug_A/dref),intercept] 
-#>                                       1.391186 
+#>                                      0.9016012 
 #>        mu_log_beta[log(drug_A/dref),log_slope] 
-#>                                       1.384032 
+#>                                      0.8991048 
 #>     tau_log_beta[1,log(drug_A/dref),intercept] 
 #>                                            NaN 
 #>     tau_log_beta[1,log(drug_A/dref),log_slope] 
 #>                                            NaN 
 #> beta_group[trial_A,log(drug_A/dref),intercept] 
-#>                                       1.391186 
+#>                                      0.9016012 
 #>     beta_group[trial_A,log(drug_A/dref),slope] 
-#>                                       1.238610 
+#>                                      0.9130918 
 head(neff_ratio(blrmfit))
 #>        mu_log_beta[log(drug_A/dref),intercept] 
-#>                                      0.6793941 
+#>                                              1 
 #>        mu_log_beta[log(drug_A/dref),log_slope] 
-#>                                      0.5941920 
+#>                                              1 
 #>     tau_log_beta[1,log(drug_A/dref),intercept] 
 #>                                            NaN 
 #>     tau_log_beta[1,log(drug_A/dref),log_slope] 
 #>                                            NaN 
 #> beta_group[trial_A,log(drug_A/dref),intercept] 
-#>                                      0.6793941 
+#>                                              1 
 #>     beta_group[trial_A,log(drug_A/dref),slope] 
-#>                                      0.8094134 
+#>                                              1 
 
 ## Recover user set sampling defaults
 options(.user_mc_options)

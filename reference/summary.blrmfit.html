@@ -146,17 +146,17 @@ by the number of trials such that results are on the 0-1 scale.</p>
 <span class="r-in"><span><span class="co">## overdosing (0.33-1] probabilities</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">blrmfit</span>, interval_prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.16</span>, <span class="fl">0.33</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          mean          sd         2.5%          50%      97.5% [0,0.16]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.002175423 0.004455258 2.102056e-06 5.600326e-05 0.01109878      1.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.008724355 0.016941761 7.153526e-05 7.739391e-04 0.04382645      1.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 0.026667152 0.043294240 1.074384e-03 6.356063e-03 0.11731116      1.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 0.100945832 0.099841064 1.588602e-02 5.984106e-02 0.27934022      0.7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 0.500049422 0.257584238 1.649624e-01 4.445401e-01 0.85698480      0.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.000666800 0.001343123 1.083755e-07 0.0003054777 0.00357141      1.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.004758683 0.006701482 8.491255e-06 0.0034943188 0.01880681      1.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 0.023789085 0.024556450 2.342204e-04 0.0224469994 0.06749307      1.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 0.120178943 0.101934619 6.572024e-03 0.1020491566 0.27082706      0.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 0.637061758 0.145485587 4.716297e-01 0.6164261785 0.84390315      0.0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   (0.16,0.33] (0.33,1]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1         0.0      0.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2         0.0      0.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3         0.0      0.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4         0.3      0.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5         0.3      0.7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1         0.0        0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2         0.0        0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3         0.0        0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4         0.4        0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5         0.0        1</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## obtain predictive distribution for respective cohorts and</span></span></span>
 <span class="r-in"><span><span class="co">## calculate probability for no event, 1 event or &gt;1 event</span></span></span>
@@ -164,11 +164,11 @@ by the number of trials such that results are on the 0-1 scale.</p>
 <span class="r-in"><span><span class="co">## as put into the data-set</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">blrmfit</span>, interval_prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">10</span><span class="op">)</span>, predictive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         mean         sd 2.5% 50% 97.5%    (-1,0]       (0,1]       (1,10]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.00652627 0.08135883    0   0     0 0.9935413 0.006391417 6.730507e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.03489742 0.19414638    0   0     1 0.9670534 0.031050985 1.895623e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 0.13333576 0.40437497    0   0     1 0.8881358 0.092754269 1.910991e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 0.40378333 0.68606126    0   0     2 0.6942718 0.223424873 8.230338e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 1.00009884 0.78703834    0   1     2 0.3096653 0.380570644 3.097641e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.00200040 0.04481972    0   0     0 0.9980058 0.001988017 6.187214e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.01903473 0.13938859    0   0     0 0.9813390 0.018291972 3.690539e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 0.11894542 0.35632873    0   0     1 0.8915458 0.098539818 9.914384e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 0.48071577 0.73154840    0   0     2 0.6418672 0.254452634 1.036802e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 1.27412352 0.70747936    0   1     2 0.1507736 0.424329248 4.248971e-01</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## to obtain the predictive for a cohort-size of 6 for all patients</span></span></span>
 <span class="r-in"><span><span class="co">## in the data-set one would need to use the newdata argument, e.g.</span></span></span>
@@ -176,12 +176,12 @@ by the number of trials such that results are on the 0-1 scale.</p>
 <span class="r-in"><span>  newdata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/transform.html" class="external-link">transform</a></span><span class="op">(</span><span class="va">hist_SA</span>, num_patients <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  interval_prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">10</span><span class="op">)</span>, predictive <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         mean        sd 2.5% 50% 97.5%    (-1,0]      (0,1]       (1,10]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.01305254 0.1164477    0   0     0 0.9872816 0.01238904 0.0003293602</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.05234613 0.2442111    0   0     1 0.9523973 0.04312347 0.0044792015</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 0.16000291 0.4542517    0   0     2 0.8710905 0.10227207 0.0266374558</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 0.60567499 0.9020405    0   0     3 0.6070046 0.24112848 0.1518668865</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 3.00029653 1.8142327    0   3     6 0.0889746 0.16092126 0.7501041392</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        mean         sd 2.5% 50% 97.5%      (-1,0]       (0,1]       (1,10]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.0040008 0.06361477    0   0     0 0.996030050 0.003939273 3.067682e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.0285521 0.17213017    0   0     1 0.972370719 0.026729239 9.000420e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 0.1427345 0.39448765    0   0     1 0.872722591 0.112939247 1.433816e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 0.7210737 0.95653739    0   0     3 0.545916684 0.261360807 1.927225e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 3.8223706 1.39955992    1   4     6 0.007521125 0.046926422 9.455525e-01</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Recover user set sampling defaults</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="va">.user_mc_options</span><span class="op">)</span></span></span>

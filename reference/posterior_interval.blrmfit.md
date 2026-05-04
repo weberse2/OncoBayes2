@@ -58,13 +58,13 @@ example_model("single_agent", silent = TRUE)
 
 posterior_interval(blrmfit)
 #>                                                      2.5%     97.5%
-#> mu_log_beta[log(drug_A/dref),intercept]        -0.8640091 3.8839930
-#> mu_log_beta[log(drug_A/dref),log_slope]        -0.4132765 1.5579169
+#> mu_log_beta[log(drug_A/dref),intercept]        -1.0093911 1.7484808
+#> mu_log_beta[log(drug_A/dref),log_slope]        -0.7098918 1.1327496
 #> tau_log_beta[1,log(drug_A/dref),intercept]      0.0000000 0.0000000
 #> tau_log_beta[1,log(drug_A/dref),log_slope]      0.0000000 0.0000000
-#> rho_log_beta[log(drug_A/dref)]                 -0.8234919 0.8211436
-#> beta_group[trial_A,log(drug_A/dref),intercept] -0.8640091 3.8839930
-#> beta_group[trial_A,log(drug_A/dref),slope]      0.7324769 4.7797538
+#> rho_log_beta[log(drug_A/dref)]                 -0.8464359 0.7435524
+#> beta_group[trial_A,log(drug_A/dref),intercept] -1.0093911 1.7484808
+#> beta_group[trial_A,log(drug_A/dref),slope]      0.4972848 3.1310372
 
 ## Recover user set sampling defaults
 options(.user_mc_options)

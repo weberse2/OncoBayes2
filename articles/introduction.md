@@ -67,6 +67,7 @@ discounting is used. By convention `OncoBayes2` assigns any group to the
 stratum “all” whenever no stratum is assigned for a group.
 
 ``` r
+
 ## Load involved packages
 library(RBesT)   ## used to define priors
 library(dplyr)   ## for mutate
@@ -84,6 +85,7 @@ drugs is available from single agent trials `trial_A` and `trial_B`. The
 historical data for this example is available in an internal data set.
 
 ``` r
+
 kable(hist_combo2)
 ```
 
@@ -110,6 +112,7 @@ mechanism allows us to specify a joint meta-analytic prior for all four
 sources of historical and concurrent data.
 
 ``` r
+
 levels(hist_combo2$group_id)
 ```
 
@@ -152,6 +155,7 @@ as built-in datasets, which are part of the `OncoBayes2` package.
 #### Drug info
 
 ``` r
+
 kable(drug_info_combo2)
 ```
 
@@ -166,6 +170,7 @@ The provisional dose levels are specified as below. For conciseness, we
 limit the dose level of in these provisional doses.
 
 ``` r
+
 dose_info <- filter(
   dose_info_combo2, group_id == "trial_AB",
   drug_A %in% c(3, 6), drug_B %in% c(0, 400, 800)
@@ -188,6 +193,7 @@ Together with the data described in the previous section, these objects
 can be used to initialize a `blrm_trial` object.
 
 ``` r
+
 combo2_trial_setup <- blrm_trial(
   data = hist_combo2,
   drug_info = drug_info_combo2,
@@ -226,6 +232,7 @@ case study in \[4\], although we slightly deviate from the model in
 To employ the simplified prior, and fit the model with MCMC:
 
 ``` r
+
 combo2_trial_start <- blrm_trial(
   data = hist_combo2,
   drug_info = drug_info_combo2,
@@ -264,6 +271,7 @@ The function `prior_summary` provides a facility for printing, in a
 readable format, a summary of the prior specification.
 
 ``` r
+
 prior_summary(combo2_trial_start) # not run here
 ```
 
@@ -274,17 +282,18 @@ selection of provisional dose levels. To obtain these summaries for the
 provisional doses specified previously, we simply write:
 
 ``` r
+
 kable(summary(combo2_trial_start, "dose_prediction"), digits = 2)
 ```
 
-| group_id | drug_A | drug_B | dose_id | stratum_id | mean |   sd | 2.5% |  50% | 97.5% | prob_underdose | prob_target | prob_overdose | ewoc_ok |
-|:---------|-------:|-------:|--------:|:-----------|-----:|-----:|-----:|-----:|------:|---------------:|------------:|--------------:|:--------|
-| trial_AB |      3 |      0 |      27 | all        | 0.08 | 0.14 | 0.00 | 0.04 |  0.52 |           0.88 |        0.07 |          0.04 | TRUE    |
-| trial_AB |      3 |    400 |      28 | all        | 0.14 | 0.17 | 0.01 | 0.09 |  0.72 |           0.74 |        0.17 |          0.09 | TRUE    |
-| trial_AB |      3 |    800 |      30 | all        | 0.21 | 0.20 | 0.02 | 0.15 |  0.85 |           0.53 |        0.29 |          0.18 | TRUE    |
-| trial_AB |      6 |      0 |      35 | all        | 0.18 | 0.17 | 0.01 | 0.14 |  0.77 |           0.58 |        0.29 |          0.13 | TRUE    |
-| trial_AB |      6 |    400 |      36 | all        | 0.24 | 0.21 | 0.02 | 0.18 |  0.91 |           0.45 |        0.31 |          0.24 | TRUE    |
-| trial_AB |      6 |    800 |      38 | all        | 0.32 | 0.25 | 0.02 | 0.24 |  0.94 |           0.36 |        0.26 |          0.39 | FALSE   |
+| group_id | drug_A | drug_B | dose_id | stratum_id | mean | sd | 2.5% | 50% | 97.5% | prob_underdose | prob_target | prob_overdose | ewoc_ok |
+|:---|---:|---:|---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|
+| trial_AB | 3 | 0 | 27 | all | 0.08 | 0.14 | 0.00 | 0.04 | 0.52 | 0.88 | 0.07 | 0.04 | TRUE |
+| trial_AB | 3 | 400 | 28 | all | 0.14 | 0.17 | 0.01 | 0.09 | 0.72 | 0.74 | 0.17 | 0.09 | TRUE |
+| trial_AB | 3 | 800 | 30 | all | 0.21 | 0.20 | 0.02 | 0.15 | 0.85 | 0.53 | 0.29 | 0.18 | TRUE |
+| trial_AB | 6 | 0 | 35 | all | 0.18 | 0.17 | 0.01 | 0.14 | 0.77 | 0.58 | 0.29 | 0.13 | TRUE |
+| trial_AB | 6 | 400 | 36 | all | 0.24 | 0.21 | 0.02 | 0.18 | 0.91 | 0.45 | 0.31 | 0.24 | TRUE |
+| trial_AB | 6 | 800 | 38 | all | 0.32 | 0.25 | 0.02 | 0.24 | 0.94 | 0.36 | 0.26 | 0.39 | FALSE |
 
 Such summaries may be used to assess which combination doses have
 unacceptable high risk of toxicity. For example, according to the
@@ -306,7 +315,7 @@ number of samples representing the posterior is large enough to estimate
 desired quantities of interest with sufficient accuracy. The
 `OncoBayes2` package automatically warns in case of non-convergence as
 indicated by the Rhat diagnostic \[5\]. All model parameters must have
-an Rhat of less than $1.1$ (values much larger than $1.0$ indicate
+an Rhat of less than $`1.1`$ (values much larger than $`1.0`$ indicate
 non-convergence).
 
 As the primary objective for a BLRM is to determine a safe set of doses
@@ -316,6 +325,7 @@ well. These diagnostics can be obtained for the pre-defined set of doses
 via the `ewoc_check` summary routine as:
 
 ``` r
+
 kable(summary(combo2_trial_start, "ewoc_check"), digits = 3)
 ```
 
@@ -326,13 +336,13 @@ kable(summary(combo2_trial_start, "ewoc_check"), digits = 3)
     ## Please call "help('blrm_trial', help_type='summary')" for further documentation.
 
 | group_id | drug_A | drug_B | dose_id | stratum_id | prob_overdose_est | prob_overdose_stat | prob_overdose_mcse | prob_overdose_ess | prob_overdose_rhat |
-|:---------|-------:|-------:|--------:|:-----------|------------------:|-------------------:|-------------------:|------------------:|-------------------:|
-| trial_AB |      3 |      0 |      27 | all        |             0.093 |            -60.245 |              0.004 |          1898.087 |              1.000 |
-| trial_AB |      3 |    400 |      28 | all        |             0.164 |            -41.309 |              0.004 |          1924.781 |              1.001 |
-| trial_AB |      3 |    800 |      30 | all        |             0.275 |             -8.714 |              0.006 |          1650.808 |              1.000 |
-| trial_AB |      6 |      0 |      35 | all        |             0.230 |            -17.027 |              0.006 |          2026.784 |              1.002 |
-| trial_AB |      6 |    400 |      36 | all        |             0.322 |             -1.165 |              0.007 |          1984.089 |              1.002 |
-| trial_AB |      6 |    800 |      38 | all        |             0.463 |             13.750 |              0.010 |          2092.806 |              1.002 |
+|:---|---:|---:|---:|:---|---:|---:|---:|---:|---:|
+| trial_AB | 3 | 0 | 27 | all | 0.093 | -60.245 | 0.004 | 1898.087 | 1.000 |
+| trial_AB | 3 | 400 | 28 | all | 0.164 | -41.309 | 0.004 | 1924.781 | 1.001 |
+| trial_AB | 3 | 800 | 30 | all | 0.275 | -8.714 | 0.006 | 1650.808 | 1.000 |
+| trial_AB | 6 | 0 | 35 | all | 0.230 | -17.027 | 0.006 | 2026.784 | 1.002 |
+| trial_AB | 6 | 400 | 36 | all | 0.322 | -1.165 | 0.007 | 1984.089 | 1.002 |
+| trial_AB | 6 | 800 | 38 | all | 0.463 | 13.750 | 0.010 | 2092.806 | 1.002 |
 
 For the standard EWOC criterion, the `prob_overdose_est` column contains
 the 75% quantile of the posterior DLT probability, which must be smaller
@@ -343,7 +353,7 @@ approximately distributed as a standard normal random variate, the
 statistic can be compared with quantiles of the standard normal
 distribution. `OncoBayes2` will warn for an imprecise EWOC estimate
 whenever the statistic is within the range of the central 95% interval
-of $( - 1.96,1.96)$. Whenever this occurs it can be useful to increase
+of $`(-1.96,1.96)`$. Whenever this occurs it can be useful to increase
 the number of iterations in order to decrease the mcse, which scales
 with the inverse of the square root of the MC ess. The MC ess is the
 number of independent samples the posterior corresponds to (recall that
@@ -353,7 +363,7 @@ to the help of the `summary.blrm_trial` function (see
 
 We can see that for the pre-defined doses of the trial the EWOC decision
 can be determined with more than enough accuracy given that the
-statistic closest to $0$ is $- 1.17$.
+statistic closest to $`0`$ is $`-1.17`$.
 
 ### Posterior predictive summaries
 
@@ -366,6 +376,7 @@ the predictive probability of 2 or more DLTs out of an initial cohort of
 3 to 6 patients is sufficiently low.
 
 ``` r
+
 candidate_starting_dose <- summary(combo2_trial_start, "dose_info") |>
   filter(drug_A == 3, drug_B == 400) |>
   crossing(num_toxicities = 0, num_patients = 3:6)
@@ -400,6 +411,7 @@ accrued data for each dose escalation decision point. If a new cohort of
 patients is observed, say:
 
 ``` r
+
 new_cohort <- tibble(
   group_id = "trial_AB",
   drug_A = 3,
@@ -414,6 +426,7 @@ One can update the model to incorporate this new information using
 to the new cohort:
 
 ``` r
+
 combo2_trial_update <- update(combo2_trial_start, add_data = new_cohort)
 ```
 
@@ -428,17 +441,18 @@ summaries. Obtaining the summaries for the pre-planned provisional doses
 is then again straightforward:
 
 ``` r
+
 kable(summary(combo2_trial_update, "dose_prediction"), digits = 2)
 ```
 
-| group_id | drug_A | drug_B | dose_id | stratum_id | mean |   sd | 2.5% |  50% | 97.5% | prob_underdose | prob_target | prob_overdose | ewoc_ok |
-|:---------|-------:|-------:|--------:|:-----------|-----:|-----:|-----:|-----:|------:|---------------:|------------:|--------------:|:--------|
-| trial_AB |      3 |      0 |      27 | all        | 0.08 | 0.08 | 0.00 | 0.06 |  0.27 |           0.89 |        0.10 |          0.01 | TRUE    |
-| trial_AB |      3 |    400 |      28 | all        | 0.14 | 0.09 | 0.02 | 0.12 |  0.37 |           0.68 |        0.27 |          0.04 | TRUE    |
-| trial_AB |      3 |    800 |      30 | all        | 0.23 | 0.15 | 0.04 | 0.20 |  0.58 |           0.38 |        0.40 |          0.22 | TRUE    |
-| trial_AB |      6 |      0 |      35 | all        | 0.18 | 0.13 | 0.01 | 0.15 |  0.49 |           0.53 |        0.37 |          0.10 | TRUE    |
-| trial_AB |      6 |    400 |      36 | all        | 0.25 | 0.16 | 0.04 | 0.22 |  0.61 |           0.34 |        0.39 |          0.27 | FALSE   |
-| trial_AB |      6 |    800 |      38 | all        | 0.34 | 0.22 | 0.04 | 0.30 |  0.82 |           0.25 |        0.30 |          0.46 | FALSE   |
+| group_id | drug_A | drug_B | dose_id | stratum_id | mean | sd | 2.5% | 50% | 97.5% | prob_underdose | prob_target | prob_overdose | ewoc_ok |
+|:---|---:|---:|---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|
+| trial_AB | 3 | 0 | 27 | all | 0.08 | 0.08 | 0.00 | 0.06 | 0.27 | 0.89 | 0.10 | 0.01 | TRUE |
+| trial_AB | 3 | 400 | 28 | all | 0.14 | 0.09 | 0.02 | 0.12 | 0.37 | 0.68 | 0.27 | 0.04 | TRUE |
+| trial_AB | 3 | 800 | 30 | all | 0.23 | 0.15 | 0.04 | 0.20 | 0.58 | 0.38 | 0.40 | 0.22 | TRUE |
+| trial_AB | 6 | 0 | 35 | all | 0.18 | 0.13 | 0.01 | 0.15 | 0.49 | 0.53 | 0.37 | 0.10 | TRUE |
+| trial_AB | 6 | 400 | 36 | all | 0.25 | 0.16 | 0.04 | 0.22 | 0.61 | 0.34 | 0.39 | 0.27 | FALSE |
+| trial_AB | 6 | 800 | 38 | all | 0.34 | 0.22 | 0.04 | 0.30 | 0.82 | 0.25 | 0.30 | 0.46 | FALSE |
 
 In case posterior summaries are needed for doses other than the
 pre-planned ones, then this is possible using the `newdata_prediction`
@@ -446,6 +460,7 @@ functionality, which allows to specify a different set of doses via the
 `newdata` argument:
 
 ``` r
+
 kable(summary(combo2_trial_update, "newdata_prediction",
   newdata = tibble(
     group_id = "trial_AB",
@@ -457,11 +472,11 @@ kable(summary(combo2_trial_update, "newdata_prediction",
 
     ## stratum_id not given, but only one stratum defined. Assigning first stratum.
 
-| group_id | drug_A | drug_B | stratum_id | dose_id | mean |   sd | 2.5% |  50% | 97.5% | prob_underdose | prob_target | prob_overdose | ewoc_ok |
-|:---------|-------:|-------:|:-----------|--------:|-----:|-----:|-----:|-----:|------:|---------------:|------------:|--------------:|:--------|
-| trial_AB |    4.5 |    400 | all        |      NA | 0.19 | 0.12 | 0.03 | 0.16 |  0.48 |           0.49 |        0.38 |          0.13 | TRUE    |
-| trial_AB |    4.5 |    600 | all        |      NA | 0.23 | 0.15 | 0.04 | 0.20 |  0.59 |           0.38 |        0.38 |          0.24 | TRUE    |
-| trial_AB |    4.5 |    800 | all        |      NA | 0.28 | 0.18 | 0.04 | 0.24 |  0.71 |           0.29 |        0.37 |          0.34 | FALSE   |
+| group_id | drug_A | drug_B | stratum_id | dose_id | mean | sd | 2.5% | 50% | 97.5% | prob_underdose | prob_target | prob_overdose | ewoc_ok |
+|:---|---:|---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|:---|
+| trial_AB | 4.5 | 400 | all | NA | 0.19 | 0.12 | 0.03 | 0.16 | 0.48 | 0.49 | 0.38 | 0.13 | TRUE |
+| trial_AB | 4.5 | 600 | all | NA | 0.23 | 0.15 | 0.04 | 0.20 | 0.59 | 0.38 | 0.38 | 0.24 | TRUE |
+| trial_AB | 4.5 | 800 | all | NA | 0.28 | 0.18 | 0.04 | 0.24 | 0.71 | 0.29 | 0.37 | 0.34 | FALSE |
 
 ### Data scenarios
 
@@ -475,6 +490,7 @@ subsequent cohort enrolled at 3 mg drug A + 800 mg drug B, and review
 the model’s inference at adjacent doses.
 
 ``` r
+
 # set up two scenarios at the starting dose level
 # store them as data frames in a named list
 scenarios <- expand_grid(
@@ -514,23 +530,23 @@ scenario_inference <- lapply(scenarios, function(scenario_newdata) {
     ## You may call "summary(trial, summarize='ewoc_check', ...)" for more diagnostic details.
     ## Please call "help('blrm_trial', help_type='summary')" for further documentation.
 
-| Scenario | drug_A | drug_B | mean |   sd | 2.5% |  50% | 97.5% | prob_underdose | prob_target | prob_overdose | ewoc_ok |
-|:---------|-------:|-------:|-----:|-----:|-----:|-----:|------:|---------------:|------------:|--------------:|:--------|
-| 0/3 DLTs |    3.0 |    600 | 0.13 | 0.08 | 0.02 | 0.12 |  0.34 |           0.70 |        0.27 |          0.03 | TRUE    |
-| 0/3 DLTs |    3.0 |    800 | 0.17 | 0.10 | 0.03 | 0.15 |  0.42 |           0.55 |        0.37 |          0.08 | TRUE    |
-| 0/3 DLTs |    4.5 |    600 | 0.17 | 0.11 | 0.03 | 0.15 |  0.45 |           0.53 |        0.37 |          0.10 | TRUE    |
-| 0/3 DLTs |    4.5 |    800 | 0.21 | 0.14 | 0.03 | 0.18 |  0.56 |           0.44 |        0.39 |          0.17 | TRUE    |
-| 1/3 DLTs |    3.0 |    600 | 0.20 | 0.10 | 0.05 | 0.18 |  0.44 |           0.42 |        0.47 |          0.11 | TRUE    |
-| 1/3 DLTs |    3.0 |    800 | 0.25 | 0.13 | 0.06 | 0.23 |  0.55 |           0.26 |        0.50 |          0.24 | TRUE    |
-| 1/3 DLTs |    4.5 |    600 | 0.26 | 0.14 | 0.06 | 0.24 |  0.59 |           0.27 |        0.46 |          0.28 | FALSE   |
-| 1/3 DLTs |    4.5 |    800 | 0.32 | 0.17 | 0.07 | 0.29 |  0.69 |           0.19 |        0.38 |          0.43 | FALSE   |
-| 2/3 DLTs |    3.0 |    600 | 0.28 | 0.13 | 0.08 | 0.26 |  0.60 |           0.19 |        0.50 |          0.31 | FALSE   |
-| 2/3 DLTs |    3.0 |    800 | 0.36 | 0.16 | 0.11 | 0.34 |  0.73 |           0.08 |        0.40 |          0.52 | FALSE   |
-| 2/3 DLTs |    4.5 |    600 | 0.36 | 0.16 | 0.10 | 0.34 |  0.72 |           0.10 |        0.38 |          0.53 | FALSE   |
-| 2/3 DLTs |    4.5 |    800 | 0.44 | 0.19 | 0.12 | 0.43 |  0.82 |           0.06 |        0.26 |          0.68 | FALSE   |
+| Scenario | drug_A | drug_B | mean | sd | 2.5% | 50% | 97.5% | prob_underdose | prob_target | prob_overdose | ewoc_ok |
+|:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|:---|
+| 0/3 DLTs | 3.0 | 600 | 0.13 | 0.08 | 0.02 | 0.12 | 0.34 | 0.70 | 0.27 | 0.03 | TRUE |
+| 0/3 DLTs | 3.0 | 800 | 0.17 | 0.10 | 0.03 | 0.15 | 0.42 | 0.55 | 0.37 | 0.08 | TRUE |
+| 0/3 DLTs | 4.5 | 600 | 0.17 | 0.11 | 0.03 | 0.15 | 0.45 | 0.53 | 0.37 | 0.10 | TRUE |
+| 0/3 DLTs | 4.5 | 800 | 0.21 | 0.14 | 0.03 | 0.18 | 0.56 | 0.44 | 0.39 | 0.17 | TRUE |
+| 1/3 DLTs | 3.0 | 600 | 0.20 | 0.10 | 0.05 | 0.18 | 0.44 | 0.42 | 0.47 | 0.11 | TRUE |
+| 1/3 DLTs | 3.0 | 800 | 0.25 | 0.13 | 0.06 | 0.23 | 0.55 | 0.26 | 0.50 | 0.24 | TRUE |
+| 1/3 DLTs | 4.5 | 600 | 0.26 | 0.14 | 0.06 | 0.24 | 0.59 | 0.27 | 0.46 | 0.28 | FALSE |
+| 1/3 DLTs | 4.5 | 800 | 0.32 | 0.17 | 0.07 | 0.29 | 0.69 | 0.19 | 0.38 | 0.43 | FALSE |
+| 2/3 DLTs | 3.0 | 600 | 0.28 | 0.13 | 0.08 | 0.26 | 0.60 | 0.19 | 0.50 | 0.31 | FALSE |
+| 2/3 DLTs | 3.0 | 800 | 0.36 | 0.16 | 0.11 | 0.34 | 0.73 | 0.08 | 0.40 | 0.52 | FALSE |
+| 2/3 DLTs | 4.5 | 600 | 0.36 | 0.16 | 0.10 | 0.34 | 0.72 | 0.10 | 0.38 | 0.53 | FALSE |
+| 2/3 DLTs | 4.5 | 800 | 0.44 | 0.19 | 0.12 | 0.43 | 0.82 | 0.06 | 0.26 | 0.68 | FALSE |
 
 Model inference for trial AB when varying hypothetical DLT scenarios for
-a cohort of size 3
+a cohort of size 3 {.table style="width:100%;"}
 
 ## Continuation of example: Using concurrent data
 
@@ -538,6 +554,7 @@ In the example of \[1\], at the time of completion of the first stage of
 `trial_AB`, the following additional data was observed.
 
 ``` r
+
 trial_AB_data <- filter(codata_combo2, group_id == "trial_AB", cohort_time == 1)
 kable(trial_AB_data)
 ```
@@ -552,6 +569,7 @@ These data are easily incorporated into the model using another call to
 `update`, as below.
 
 ``` r
+
 combo2_trial_histdata <- update(combo2_trial_start, add_data = trial_AB_data)
 ```
 
@@ -560,6 +578,7 @@ drug A did continue and collected more data on the drug A dose-toxicity
 relationship:
 
 ``` r
+
 trial_A_codata <- filter(codata_combo2, group_id == "trial_A", cohort_time == 1)
 kable(trial_A_codata)
 ```
@@ -575,6 +594,7 @@ Wthin the MAC framework we may simply add the concurrent data to our
 overall model which yields refined predictions for future cohorts.
 
 ``` r
+
 combo2_trial_codata <- update(combo2_trial_histdata, add_data = trial_A_codata)
 ```
 
@@ -588,6 +608,7 @@ different data constellations. Here we use the function
 relationship in a continuous manner in terms of the dose.
 
 ``` r
+
 plot_toxicity_intervals_stacked(combo2_trial_histdata,
   newdata = mutate(dose_info, dose_id = NULL, stratum_id = "all"),
   x = vars(drug_B),
@@ -599,6 +620,7 @@ plot_toxicity_intervals_stacked(combo2_trial_histdata,
 ![](introduction_files/figure-html/unnamed-chunk-25-1.png)
 
 ``` r
+
 plot_toxicity_intervals_stacked(combo2_trial_codata,
   newdata = mutate(dose_info, dose_id = NULL, stratum_id = "all"),
   x = vars(drug_B),
@@ -622,6 +644,7 @@ toxicities were observed in this concurrent study as stage 2 of
 `trial_AB`.
 
 ``` r
+
 trial_AB_stage_2_codata <- filter(codata_combo2, cohort_time == 2)
 kable(trial_AB_stage_2_codata)
 ```
@@ -650,6 +673,7 @@ ensure that we use an entirely new dataset which includes all data
 collected; so this includes historical, trial and concurrent data:
 
 ``` r
+
 combo2_trial_final <- update(combo2_trial_start, data = codata_combo2)
 ```
 
@@ -667,6 +691,7 @@ DLT at all dose combinations. Whenever the 75% quantile exceeds 33%,
 then the EWOC criterion is violated and the dose is too toxic.
 
 ``` r
+
 grid_length <- 25
 
 dose_info_plot_grid <- expand_grid(
@@ -715,18 +740,19 @@ combination studies (Vol. 69). CRC Press.
 
 \[5\] Vehtari, A., Gelman, A., Simpson, D., Carpenter, B., Bürkner, P.
 C. (2021). Rank-Normalization, Folding, and Localization: An Improved
-($\widehat{R}$) for Assessing Convergence of MCMC, Bayesian Analysis, 16
+($`\hat{R}`$) for Assessing Convergence of MCMC, Bayesian Analysis, 16
 (2), 667–718. <https://doi.org/10.1214/20-BA1221>
 
 ## Session Info
 
 ``` r
+
 sessionInfo()
 ```
 
-    ## R version 4.5.2 (2025-10-31)
+    ## R version 4.6.0 (2026-04-24)
     ## Platform: x86_64-pc-linux-gnu
-    ## Running under: Ubuntu 24.04.3 LTS
+    ## Running under: Ubuntu 24.04.4 LTS
     ## 
     ## Matrix products: default
     ## BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
@@ -745,29 +771,29 @@ sessionInfo()
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] tibble_3.3.0     ggplot2_4.0.1    knitr_1.50       tidyr_1.3.1     
-    ## [5] dplyr_1.1.4      posterior_1.6.1  OncoBayes2_0.9-4 RBesT_1.8-2     
+    ## [1] tibble_3.3.1     ggplot2_4.0.3    knitr_1.51       tidyr_1.3.2     
+    ## [5] dplyr_1.2.1      posterior_1.7.0  OncoBayes2_0.9-4 RBesT_1.9-0     
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] tensorA_0.36.2.1      sass_0.4.10           generics_0.1.4       
-    ##  [4] digest_0.6.39         magrittr_2.0.4        evaluate_1.0.5       
-    ##  [7] grid_4.5.2            RColorBrewer_1.1-3    mvtnorm_1.3-3        
+    ##  [4] digest_0.6.39         magrittr_2.0.5        evaluate_1.0.5       
+    ##  [7] grid_4.6.0            RColorBrewer_1.1-3    mvtnorm_1.3-7        
     ## [10] fastmap_1.2.0         jsonlite_2.0.0        pkgbuild_1.4.8       
-    ## [13] backports_1.5.0       Formula_1.2-5         gridExtra_2.3        
-    ## [16] purrr_1.2.0           QuickJSR_1.8.1        scales_1.4.0         
-    ## [19] isoband_0.3.0         codetools_0.2-20      textshaping_1.0.4    
-    ## [22] jquerylib_0.1.4       abind_1.4-8           cli_3.6.5            
-    ## [25] rlang_1.1.6           withr_3.0.2           cachem_1.1.0         
-    ## [28] yaml_2.3.12           StanHeaders_2.32.10   parallel_4.5.2       
-    ## [31] tools_4.5.2           rstan_2.32.7          inline_0.3.21        
-    ## [34] rstantools_2.5.0      checkmate_2.3.3       assertthat_0.2.1     
-    ## [37] vctrs_0.6.5           R6_2.6.1              matrixStats_1.5.0    
-    ## [40] stats4_4.5.2          lifecycle_1.0.4       fs_1.6.6             
-    ## [43] ragg_1.5.0            pkgconfig_2.0.3       desc_1.4.3           
-    ## [46] pkgdown_2.2.0         RcppParallel_5.1.11-1 pillar_1.11.1        
-    ## [49] bslib_0.9.0           gtable_0.3.6          loo_2.8.0            
-    ## [52] glue_1.8.0            Rcpp_1.1.0            systemfonts_1.3.1    
-    ## [55] xfun_0.55             tidyselect_1.2.1      bayesplot_1.15.0     
+    ## [13] backports_1.5.1       Formula_1.2-5         gridExtra_2.3        
+    ## [16] purrr_1.2.2           QuickJSR_1.9.2        scales_1.4.0         
+    ## [19] isoband_0.3.0         codetools_0.2-20      textshaping_1.0.5    
+    ## [22] jquerylib_0.1.4       abind_1.4-8           cli_3.6.6            
+    ## [25] rlang_1.2.0           withr_3.0.2           cachem_1.1.0         
+    ## [28] yaml_2.3.12           StanHeaders_2.32.10   parallel_4.6.0       
+    ## [31] tools_4.6.0           rstan_2.32.7          inline_0.3.21        
+    ## [34] rstantools_2.6.0      checkmate_2.3.4       assertthat_0.2.1     
+    ## [37] vctrs_0.7.3           R6_2.6.1              matrixStats_1.5.0    
+    ## [40] stats4_4.6.0          lifecycle_1.0.5       fs_2.1.0             
+    ## [43] ragg_1.5.2            pkgconfig_2.0.3       desc_1.4.3           
+    ## [46] pkgdown_2.2.0         RcppParallel_5.1.11-2 pillar_1.11.1        
+    ## [49] bslib_0.10.0          gtable_0.3.6          loo_2.9.0            
+    ## [52] glue_1.8.1            Rcpp_1.1.1-1.1        systemfonts_1.3.2    
+    ## [55] xfun_0.57             tidyselect_1.2.1      bayesplot_1.15.0     
     ## [58] farver_2.1.2          htmltools_0.5.9       labeling_0.4.3       
-    ## [61] rmarkdown_2.30        compiler_4.5.2        S7_0.2.1             
-    ## [64] distributional_0.5.0
+    ## [61] rmarkdown_2.31        compiler_4.6.0        S7_0.2.2             
+    ## [64] distributional_0.7.0

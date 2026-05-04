@@ -47,6 +47,7 @@ in Oncology Phase I Combination Trials *arXiv pre-print*, 2023,
 ## Examples
 
 ``` r
+
 ref_doses <- c(drug_A = 10, drug_B = 20)
 
 # can be used with blrm_trial

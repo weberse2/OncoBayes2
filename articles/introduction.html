@@ -63,7 +63,7 @@
                         <h4 data-toc-skip class="author">Andrew Bean,
 Sebastian Weber, Lukas Widmer</h4>
             
-            <h4 data-toc-skip class="date">2025-12-18</h4>
+            <h4 data-toc-skip class="date">2026-05-04</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Novartis/OncoBayes2/blob/main/vignettes/introduction.Rmd" class="external-link"><code>vignettes/introduction.Rmd</code></a></small>
       <div class="d-none name"><code>introduction.Rmd</code></div>
@@ -746,7 +746,7 @@ variate, the statistic can be compared with quantiles of the standard
 normal distribution. <code>OncoBayes2</code> will warn for an imprecise
 EWOC estimate whenever the statistic is within the range of the central
 95% interval of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><mn>1.96</mn><mo>,</mo><mn>1.96</mn><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(-1.96,1.96)</annotation></semantics></math>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mn>1.96</mn><mo>,</mo><mn>1.96</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(-1.96,1.96)</annotation></semantics></math>.
 Whenever this occurs it can be useful to increase the number of
 iterations in order to decrease the mcse, which scales with the inverse
 of the square root of the MC ess. The MC ess is the number of
@@ -759,7 +759,7 @@ decision can be determined with more than enough accuracy given that the
 statistic closest to
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0</mn><annotation encoding="application/x-tex">0</annotation></semantics></math>
 is
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo><mn>1.17</mn></mrow><annotation encoding="application/x-tex">-1.17</annotation></semantics></math>.</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>1.17</mn></mrow><annotation encoding="application/x-tex">-1.17</annotation></semantics></math>.</p>
 </div>
 <div class="section level3">
 <h3 id="posterior-predictive-summaries">Posterior predictive summaries<a class="anchor" aria-label="anchor" href="#posterior-predictive-summaries"></a>
@@ -1449,7 +1449,7 @@ dose.</p>
 <span>  group <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">drug_A</span><span class="op">)</span>,</span>
 <span>  facet_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Trial AB with historical data only"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-25-1.png" class="r-plt" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-25-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_blrm.html">plot_toxicity_intervals_stacked</a></span><span class="op">(</span><span class="va">combo2_trial_codata</span>,</span>
 <span>  newdata <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">dose_info</span>, dose_id <span class="op">=</span> <span class="cn">NULL</span>, stratum_id <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span>,</span>
@@ -1457,7 +1457,7 @@ dose.</p>
 <span>  group <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">drug_A</span><span class="op">)</span>,</span>
 <span>  facet_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Trial AB with historical and concurrent data on drug A"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-25-2.png" class="r-plt" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-25-2.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>As we can observe, the additional data on drug A moves the maximal
 admissible dose allowed by EWOC towards higher doses for drug B whenever
 drug A is 6 mg. This reflects that drug A has been observed to be
@@ -1600,7 +1600,7 @@ then the EWOC criterion is violated and the dose is too toxic.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_contour.html" class="external-link">geom_contour_filled</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.1</span>, <span class="fl">0.16</span>, <span class="fl">0.33</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_fill_brewer</a></span><span class="op">(</span><span class="st">"Quantile Range"</span>, type <span class="op">=</span> <span class="st">"div"</span>, palette <span class="op">=</span> <span class="st">"RdBu"</span>, direction <span class="op">=</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"DLT Probability 75% Quantile"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-28-1.png" class="r-plt" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-28-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <!---
 ## Advanced topics
 
@@ -1647,9 +1647,9 @@ for Assessing Convergence of MCMC, Bayesian Analysis, 16 (2), 667–718.
 </h2>
 <div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## R version 4.5.2 (2025-10-31)</span></span>
+<pre><code><span><span class="co">## R version 4.6.0 (2026-04-24)</span></span>
 <span><span class="co">## Platform: x86_64-pc-linux-gnu</span></span>
-<span><span class="co">## Running under: Ubuntu 24.04.3 LTS</span></span>
+<span><span class="co">## Running under: Ubuntu 24.04.4 LTS</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Matrix products: default</span></span>
 <span><span class="co">## BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 </span></span>
@@ -1668,32 +1668,32 @@ for Assessing Convergence of MCMC, Bayesian Analysis, 16 (2), 667–718.
 <span><span class="co">## [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">## [1] tibble_3.3.0     ggplot2_4.0.1    knitr_1.50       tidyr_1.3.1     </span></span>
-<span><span class="co">## [5] dplyr_1.1.4      posterior_1.6.1  OncoBayes2_0.9-4 RBesT_1.8-2     </span></span>
+<span><span class="co">## [1] tibble_3.3.1     ggplot2_4.0.3    knitr_1.51       tidyr_1.3.2     </span></span>
+<span><span class="co">## [5] dplyr_1.2.1      posterior_1.7.0  OncoBayes2_0.9-4 RBesT_1.9-0     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
 <span><span class="co">##  [1] tensorA_0.36.2.1      sass_0.4.10           generics_0.1.4       </span></span>
-<span><span class="co">##  [4] digest_0.6.39         magrittr_2.0.4        evaluate_1.0.5       </span></span>
-<span><span class="co">##  [7] grid_4.5.2            RColorBrewer_1.1-3    mvtnorm_1.3-3        </span></span>
+<span><span class="co">##  [4] digest_0.6.39         magrittr_2.0.5        evaluate_1.0.5       </span></span>
+<span><span class="co">##  [7] grid_4.6.0            RColorBrewer_1.1-3    mvtnorm_1.3-7        </span></span>
 <span><span class="co">## [10] fastmap_1.2.0         jsonlite_2.0.0        pkgbuild_1.4.8       </span></span>
-<span><span class="co">## [13] backports_1.5.0       Formula_1.2-5         gridExtra_2.3        </span></span>
-<span><span class="co">## [16] purrr_1.2.0           QuickJSR_1.8.1        scales_1.4.0         </span></span>
-<span><span class="co">## [19] isoband_0.3.0         codetools_0.2-20      textshaping_1.0.4    </span></span>
-<span><span class="co">## [22] jquerylib_0.1.4       abind_1.4-8           cli_3.6.5            </span></span>
-<span><span class="co">## [25] rlang_1.1.6           withr_3.0.2           cachem_1.1.0         </span></span>
-<span><span class="co">## [28] yaml_2.3.12           StanHeaders_2.32.10   parallel_4.5.2       </span></span>
-<span><span class="co">## [31] tools_4.5.2           rstan_2.32.7          inline_0.3.21        </span></span>
-<span><span class="co">## [34] rstantools_2.5.0      checkmate_2.3.3       assertthat_0.2.1     </span></span>
-<span><span class="co">## [37] vctrs_0.6.5           R6_2.6.1              matrixStats_1.5.0    </span></span>
-<span><span class="co">## [40] stats4_4.5.2          lifecycle_1.0.4       fs_1.6.6             </span></span>
-<span><span class="co">## [43] ragg_1.5.0            pkgconfig_2.0.3       desc_1.4.3           </span></span>
-<span><span class="co">## [46] pkgdown_2.2.0         RcppParallel_5.1.11-1 pillar_1.11.1        </span></span>
-<span><span class="co">## [49] bslib_0.9.0           gtable_0.3.6          loo_2.8.0            </span></span>
-<span><span class="co">## [52] glue_1.8.0            Rcpp_1.1.0            systemfonts_1.3.1    </span></span>
-<span><span class="co">## [55] xfun_0.55             tidyselect_1.2.1      bayesplot_1.15.0     </span></span>
+<span><span class="co">## [13] backports_1.5.1       Formula_1.2-5         gridExtra_2.3        </span></span>
+<span><span class="co">## [16] purrr_1.2.2           QuickJSR_1.9.2        scales_1.4.0         </span></span>
+<span><span class="co">## [19] isoband_0.3.0         codetools_0.2-20      textshaping_1.0.5    </span></span>
+<span><span class="co">## [22] jquerylib_0.1.4       abind_1.4-8           cli_3.6.6            </span></span>
+<span><span class="co">## [25] rlang_1.2.0           withr_3.0.2           cachem_1.1.0         </span></span>
+<span><span class="co">## [28] yaml_2.3.12           StanHeaders_2.32.10   parallel_4.6.0       </span></span>
+<span><span class="co">## [31] tools_4.6.0           rstan_2.32.7          inline_0.3.21        </span></span>
+<span><span class="co">## [34] rstantools_2.6.0      checkmate_2.3.4       assertthat_0.2.1     </span></span>
+<span><span class="co">## [37] vctrs_0.7.3           R6_2.6.1              matrixStats_1.5.0    </span></span>
+<span><span class="co">## [40] stats4_4.6.0          lifecycle_1.0.5       fs_2.1.0             </span></span>
+<span><span class="co">## [43] ragg_1.5.2            pkgconfig_2.0.3       desc_1.4.3           </span></span>
+<span><span class="co">## [46] pkgdown_2.2.0         RcppParallel_5.1.11-2 pillar_1.11.1        </span></span>
+<span><span class="co">## [49] bslib_0.10.0          gtable_0.3.6          loo_2.9.0            </span></span>
+<span><span class="co">## [52] glue_1.8.1            Rcpp_1.1.1-1.1        systemfonts_1.3.2    </span></span>
+<span><span class="co">## [55] xfun_0.57             tidyselect_1.2.1      bayesplot_1.15.0     </span></span>
 <span><span class="co">## [58] farver_2.1.2          htmltools_0.5.9       labeling_0.4.3       </span></span>
-<span><span class="co">## [61] rmarkdown_2.30        compiler_4.5.2        S7_0.2.1             </span></span>
-<span><span class="co">## [64] distributional_0.5.0</span></span></code></pre>
+<span><span class="co">## [61] rmarkdown_2.31        compiler_4.6.0        S7_0.2.2             </span></span>
+<span><span class="co">## [64] distributional_0.7.0</span></span></code></pre>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

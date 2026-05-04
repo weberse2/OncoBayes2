@@ -90,6 +90,9 @@ blrmfit <- blrm_exnex(
   prior_EX_prob_inter = matrix(1, nrow = num_groups, ncol = num_inter),
   prior_tau_dist = 1
 )
+#> Warning: There were 10 transitions after warmup that exceeded the maximum treedepth. Increase max_treedepth above 10. See
+#> https://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
+#> Warning: Examine the pairs() plot to diagnose sampling problems
 #> Warning: The largest R-hat is NA, indicating chains have not mixed.
 #> Running the chains for more iterations may help. See
 #> https://mc-stan.org/misc/warnings.html#r-hat
