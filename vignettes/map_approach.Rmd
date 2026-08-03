@@ -9,6 +9,8 @@ vignette: >
   %\VignetteIndexEntry{Meta-Analytic-Predictive (MAP) approach for dose-toxicity modelling}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
+bibliography: references.bib
+link-citations: true
 editor_options: 
   chunk_output_type: console
 ---
@@ -56,7 +58,7 @@ at that stage.
 
 The recommended reference for more details on these approaches, how
 they relate to each other, and how they are applied in the
-dose-toxicity setting is explained in Neuenschwander et al (2016).
+dose-toxicity setting is explained in @neuenschwander2016codata.
 
 In this vignette, we illustrate the implementation of the MAP
 approach, and describe its usage for safety monitoring in a realistic
@@ -552,7 +554,7 @@ the interaction model.
 
 The terms $\pi_A(d_A)$ and $\pi_B(d_B)$ represent the toxicity risk
 under each single-agent, respectively, and are modelled with logistic
-regression as in Neuenschwander et al (2008):
+regression as in @neuenschwander2008:
 
 $$\pi_A(d_A) = \log(\alpha_A) + \beta_A \log(d_A / d_A^*)$$
 
@@ -696,6 +698,10 @@ $$ \eta_i \sim \mbox{N}(\mu_\eta, \tau^2_\eta). $$
 Priors for the exchangeable means $\mu$ and variances $\tau$ are
 identical to the meta-analytic models for the historical single-agent
 data in the previous section.
+
+# References
+
+<div id="refs"></div>
 
 # Session Info
 

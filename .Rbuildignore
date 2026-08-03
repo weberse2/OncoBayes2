@@ -5,6 +5,7 @@
 ^.gitignore$
 ^.github$
 ^.gitattributes$
+^AGENTS\.md$
 ^inst/extra/install.*$
 ^src/.*so$
 ^src/.*o$
@@ -23,6 +24,7 @@
 ^Meta$
 ^tests/figs/*$
 ^tests/testthat/_snaps/*$
+^tests/testthat/fixtures/.*$
 ^plot-snaps.tar.gz$
 ^_pkgdown\.yml$
 ^docs$

@@ -31,7 +31,7 @@ posterior_interval.blrmfit <- function(object, prob = 0.95, ...) {
   if (object$has_inter) {
     pars <- c(pars, c("mu_eta", "tau_eta", "Sigma_corr_eta", "eta_group"))
   }
-  post <- as.matrix(object$stanfit, pars = pars)
+  post <- as_draws_matrix(object, variable = pars)
   rstantools::posterior_interval(post, prob = prob)
 }
 

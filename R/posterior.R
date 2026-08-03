@@ -5,8 +5,6 @@
 #' Transform `blrmfit` or `blrm_trial` to `draws` objects
 #'
 #' @description
-#' `r lifecycle::badge("experimental")`
-#'
 #' Transform a `blrmfit` or `blrm_trial` object to a format supported by the
 #' \pkg{posterior} package.
 #'
@@ -27,9 +25,6 @@
 #' @details To subset iterations, chains, or draws, use the
 #'   [posterior::subset_draws()] method after
 #'   transforming the input object to a `draws` object.
-#'
-#' The function is experimental as the set of exported posterior
-#' variables are subject to updates.
 #'
 #' @seealso [posterior::draws()]
 #'   [posterior::subset_draws()]
@@ -60,7 +55,7 @@ as_draws.blrmfit <- function(
 ) {
   # draws_list is the fastest format to convert to at the moment
   .as_draws_conversion(
-    x$stanfit,
+    x,
     as_draws_list,
     variable = variable,
     regex = regex,
@@ -82,7 +77,7 @@ as_draws_matrix.blrmfit <- function(
   ...
 ) {
   .as_draws_conversion(
-    x$stanfit,
+    x,
     as_draws_matrix,
     variable = variable,
     regex = regex,
@@ -104,7 +99,7 @@ as_draws_array.blrmfit <- function(
   ...
 ) {
   .as_draws_conversion(
-    x$stanfit,
+    x,
     as_draws_array,
     variable = variable,
     regex = regex,
@@ -126,7 +121,7 @@ as_draws_df.blrmfit <- function(
   ...
 ) {
   .as_draws_conversion(
-    x$stanfit,
+    x,
     as_draws_df,
     variable = variable,
     regex = regex,
@@ -148,7 +143,7 @@ as_draws_list.blrmfit <- function(
   ...
 ) {
   .as_draws_conversion(
-    x$stanfit,
+    x,
     as_draws_list,
     variable = variable,
     regex = regex,
@@ -170,7 +165,7 @@ as_draws_rvars.blrmfit <- function(
   ...
 ) {
   .as_draws_conversion(
-    x$stanfit,
+    x,
     as_draws_rvars,
     variable = variable,
     regex = regex,
@@ -179,9 +174,6 @@ as_draws_rvars.blrmfit <- function(
   )
 }
 
-# in stanfit objects draws are stored in a draws_list-like format
-# so converting from there will be most efficient
-# may be removed once rstan supports posterior natively
 #' @keywords internal
 .as_draws_conversion <- function(
   x,
@@ -191,53 +183,30 @@ as_draws_rvars.blrmfit <- function(
   inc_warmup = FALSE,
   ...
 ) {
-  stopifnot(.is.stanfit(x))
-  inc_warmup <- .as_one_logical(inc_warmup)
-  if (!length(x@sim$samples)) {
-    .stop2("The model does not contain posterior draws.")
+  if (!is.logical(inc_warmup) || length(inc_warmup) != 1L || is.na(inc_warmup)) {
+    stop("`inc_warmup` must be TRUE or FALSE.", call. = FALSE)
   }
-  ## since rstan::extract returns an array we tell posterior to go via
-  ## arrays directly
-  out <- draws_converter(as_draws_array(rstan::extract(
-    x,
-    permuted = FALSE,
-    inc_warmup = inc_warmup
-  )))
+  if (is.null(x$draws)) {
+    stop("The model does not contain posterior draws.", call. = FALSE)
+  }
+  out <- draws_converter(.stored_blrmfit_draws(x, inc_warmup = inc_warmup), ...)
   # subset variables
   subset_draws(out, variable = variable, regex = regex)
 }
 
 #' @keywords internal
-.is.stanfit <- function(x) {
-  inherits(x, "stanfit")
-}
-
-# coerce 'x' to a single logical value
-#' @keywords internal
-.as_one_logical <- function(x, allow_na = FALSE) {
-  s <- substitute(x)
-  x <- as.logical(x)
-  if (length(x) != 1L || anyNA(x) && !allow_na) {
-    s <- .deparse0(s, max_char = 100L)
-    .stop2("Cannot coerce '", s, "' to a single logical value.")
+.stored_blrmfit_draws <- function(x, inc_warmup = FALSE) {
+  if (!isTRUE(inc_warmup)) {
+    return(x$draws)
   }
-  x
-}
-
-#' @keywords internal
-.stop2 <- function(...) {
-  stop(..., call. = FALSE)
-}
-
-# combine deparse lines into one string
-# since R 4.0 we also have base::deparse1 for this purpose
-#' @keywords internal
-.deparse0 <- function(x, max_char = NULL, ...) {
-  out <- collapse(deparse(x, ...))
-  if (isTRUE(max_char > 0)) {
-    out <- substr(out, 1L, max_char)
+  if (is.null(x$draws_warmup)) {
+    stop(
+      "Warmup draws were not saved. Refit with save_warmup = TRUE ",
+      "to use inc_warmup = TRUE.",
+      call. = FALSE
+    )
   }
-  out
+  posterior::bind_draws(x$draws_warmup, x$draws, along = "iteration")
 }
 
 #' @rdname draws-OncoBayes2

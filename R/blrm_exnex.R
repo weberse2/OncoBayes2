@@ -1199,6 +1199,7 @@ blrm_exnex <- function(
   }
 
   stan_msg <- character(0)
+  cmdstanfit <- NULL
   if (backend == "rstan") {
     ## SW: the below call can trigger spurious warnings whenever tau
     ## is fixed to some value. In that case the sampler diagnostic
@@ -1276,14 +1277,8 @@ blrm_exnex <- function(
       split = verbose
     )
 
-    ## note: this will not exclude any variables as this is not
-    ## possible, maybe we can prune the stanfit object directly??
-    stanfit <- brms::read_csv_as_stanfit(
-      files = cmdstanfit$output_files(),
-      model = pkg_env$.cmdstanr_blrm_exnex_model
-    )
-
-    stanfit_status_ok <- attr(stanfit, "mode") == 0
+    stanfit <- NULL
+    stanfit_status_ok <- all(unlist(cmdstanfit$return_codes()) == 0)
 
     unlink(stan_data_file)
   }
@@ -1295,7 +1290,16 @@ blrm_exnex <- function(
     )
   }
 
-  ## label parameters of stanfit object
+  ## Define backend-agnostic parameter label specifications. These specs are
+  ## applied to stored posterior draws regardless of sampler backend.
+  variable_label_specs <- list()
+  add_label_spec <- function(par, ...) {
+    variable_label_specs[[length(variable_label_specs) + 1]] <<- list(
+      par = par,
+      factors = list(...)
+    )
+  }
+
   labels <- list()
   labels$param_log_beta <- .make_label_factor(c("intercept", "log_slope"))
   labels$param_beta <- .make_label_factor(c("intercept", "slope"))
@@ -1304,39 +1308,34 @@ blrm_exnex <- function(
     "[",
     2
   )))
-  stanfit <- .label_index(
-    stanfit,
+  add_label_spec(
     "mu_log_beta",
     labels$component,
     labels$param_log_beta
   )
-  stanfit <- .label_index(
-    stanfit,
+  add_label_spec(
     "tau_log_beta",
     strata_fct,
     labels$component,
     labels$param_log_beta
   )
-  stanfit <- .label_index(stanfit, "rho_log_beta", labels$component)
-  stanfit <- .label_index(
-    stanfit,
+  add_label_spec("rho_log_beta", labels$component)
+  add_label_spec(
     "beta_group",
     group_fct,
     labels$component,
     labels$param_beta
   )
   if (save_warmup) {
-    stanfit <- .label_index(
-      stanfit,
+    add_label_spec(
       "beta_EX_prob",
       group_fct,
       labels$component
     )
   }
-  stanfit <- .label_index(stanfit, "log_lik_group", group_fct)
+  add_label_spec("log_lik_group", group_fct)
   if (sample_map) {
-    stanfit <- .label_index(
-      stanfit,
+    add_label_spec(
       "map_log_beta",
       strata_fct,
       labels$component,
@@ -1346,33 +1345,53 @@ blrm_exnex <- function(
 
   if (has_inter) {
     labels$param_eta <- .make_label_factor(.abbreviate_label(colnames(X_inter)))
-    stanfit <- .label_index(stanfit, "eta_group", group_fct, labels$param_eta)
+    add_label_spec("eta_group", group_fct, labels$param_eta)
     if (save_warmup) {
-      stanfit <- .label_index(
-        stanfit,
+      add_label_spec(
         "eta_EX_prob",
         group_fct,
         labels$param_eta
       )
     }
-    stanfit <- .label_index(stanfit, "mu_eta", labels$param_eta)
-    stanfit <- .label_index(stanfit, "tau_eta", strata_fct, labels$param_eta)
-    stanfit <- .label_index(
-      stanfit,
+    add_label_spec("mu_eta", labels$param_eta)
+    add_label_spec("tau_eta", strata_fct, labels$param_eta)
+    add_label_spec(
       "Sigma_corr_eta",
       labels$param_eta,
       labels$param_eta
     )
     if (sample_map) {
-      stanfit <- .label_index(stanfit, "map_eta", strata_fct, labels$param_eta)
+      add_label_spec("map_eta", strata_fct, labels$param_eta)
     }
+  }
+
+  draws_backend <- .blrmfit_draws_from_backend(
+    backend = backend,
+    stanfit = stanfit,
+    cmdstanfit = cmdstanfit,
+    variable_label_specs = variable_label_specs,
+    iter = iter,
+    warmup = warmup,
+    chains = chains,
+    thin = thin,
+    save_warmup = save_warmup,
+    exclude_variables = exclude_pars
+  )
+  if (identical(backend, "cmdstanr")) {
+    unlink(cmdstanfit$output_files())
   }
 
   out <- list(
     call = call,
     group_strata = group_strata,
     standata = stan_data,
-    stanfit = stanfit,
+    stanfit = NULL,
+    draws = draws_backend$draws,
+    draws_warmup = draws_backend$draws_warmup,
+    draws_diag = draws_backend$draws_diag,
+    draws_warmup_diag = draws_backend$draws_warmup_diag,
+    metadata_mcmc = draws_backend$metadata_mcmc,
+    backend = draws_backend$backend,
     formula = f,
     model = mf,
     terms = mt,
@@ -1394,22 +1413,11 @@ blrm_exnex <- function(
   num_comp <- nrow(prior_mean)
   prior_comp <- list()
   for (i in 1:num_comp) {
-    ## note that for OncoBayes2 we allow for sigma1 or sigma2 being
-    ## 0. In this case the cov2cor function called in RBesT will throw
-    ## a warning that it cannot convert from a covariance to a
-    ## correlation matrix and return NA for the the correlation. This
-    ## is why we need to work around here. TODO for RBesT to allow
-    ## this so that no more workaround is needed here!!!
-    suppressWarnings(
-      prior_comp[[i]] <- RBesT::mixmvnorm(c(
-        1.0,
-        prior_mean[i, 1:2],
-        diag(prior_sd[i, 1:2]^2)
-      ))
-    )
-    if (any(prior_sd[i, 1:2] == 0)) {
-      prior_comp[[i]][6, ] <- 0
-    }
+    prior_comp[[i]] <- RBesT::mixmvnorm(c(
+      1.0,
+      prior_mean[i, 1:2],
+      diag(prior_sd[i, 1:2]^2)
+    ))
   }
   names(prior_comp) <- paste0("comp_", 1:num_comp)
   return(prior_comp)
@@ -1418,27 +1426,7 @@ blrm_exnex <- function(
 #' @keywords internal
 .args2mix <- function(prior_mean, prior_sd) {
   p <- length(prior_mean)
-  ## note that for OncoBayes2 we allow for sigma1 or sigma2 being
-  ## 0. In this case the cov2cor function called in RBesT will throw
-  ## a warning that it cannot convert from a covariance to a
-  ## correlation matrix and return NA for the the correlation. This
-  ## is why we need to work around here.
-  suppressWarnings(
-    mix <- RBesT::mixmvnorm(c(1.0, prior_mean, diag(prior_sd^2, p, p)))
-  )
-  d <- .mvnormdim(mix[-1, 1])
-  for (i in seq_len(d)) {
-    if (mix[1 + d + i] == 0) {
-      ## the respective standard deviation is 0 => set the correlation
-      ## coefficients to 0 which are involved
-      for (j in seq_len(d - i)) {
-        k <- i + j
-        idx <- paste0("rho[", k, ",", i, "]")
-        mix[idx, 1] <- 0
-      }
-    }
-  }
-  return(mix)
+  RBesT::mixmvnorm(c(1.0, prior_mean, diag(prior_sd^2, p, p)))
 }
 
 #' @keywords internal
@@ -1684,14 +1672,33 @@ print.blrmfit <- function(x, ..., prob = 0.95, digits = 2) {
   strip_variable <- function(labels) {
     gsub("^([A-Za-z_]+\\[)(.*)\\]$", "\\2", labels)
   }
+  posterior_summary <- function(object, pars) {
+    summary_funs <- c(
+      list(
+        mean = base::mean,
+        se_mean = posterior::mcse_mean,
+        sd = stats::sd,
+        quantile = function(x) posterior::quantile2(x, probs = probs)
+      ),
+      list(
+        n_eff = posterior::ess_bulk,
+        Rhat = posterior::rhat
+      )
+    )
+    out <- do.call(
+      posterior::summarise_draws,
+      c(list(.x = as_draws_array(object, variable = pars)), summary_funs)
+    )
+    variable <- out$variable
+    out$variable <- NULL
+    out <- as.matrix(as.data.frame(lapply(out, as.numeric)))
+    rownames(out) <- variable
+    out
+  }
 
   cat("\nComponent posterior:\n")
   cat("Population mean posterior mu_log_beta\n")
-  mu_log_beta <- summary(
-    x$stanfit,
-    pars = c("mu_log_beta"),
-    probs = probs
-  )$summary
+  mu_log_beta <- posterior_summary(x, "mu_log_beta")
   rs <- rownames(mu_log_beta)
   idx <- comp_idx(rs)
   rownames(mu_log_beta) <- gsub(
@@ -1705,11 +1712,7 @@ print.blrmfit <- function(x, ..., prob = 0.95, digits = 2) {
   print(mu_log_beta[idx$slope, ], digits = digits)
 
   cat("\nPopulation heterogeniety posterior tau_log_beta\n")
-  tau_log_beta <- summary(
-    x$stanfit,
-    pars = c("tau_log_beta"),
-    probs = probs
-  )$summary
+  tau_log_beta <- posterior_summary(x, "tau_log_beta")
   rs <- rownames(tau_log_beta)
   idx <- comp_idx(rs)
   rownames(tau_log_beta) <- gsub(
@@ -1723,41 +1726,33 @@ print.blrmfit <- function(x, ..., prob = 0.95, digits = 2) {
   print(tau_log_beta[idx$slope, ], digits = digits)
 
   cat("\nPopulation correlation posterior rho_log_beta\n")
-  rho_log_beta <- summary(
-    x$stanfit,
-    pars = c("rho_log_beta"),
-    probs = probs
-  )$summary
+  rho_log_beta <- posterior_summary(x, "rho_log_beta")
   rownames(rho_log_beta) <- strip_variable(rownames(rho_log_beta))
   print(rho_log_beta, digits = digits)
 
   if (x$standata$num_inter > 0) {
     cat("\nInteraction model posterior:\n")
     cat("Population mean posterior mu_eta\n")
-    mu_eta <- summary(x$stanfit, pars = c("mu_eta"), probs = probs)$summary
+    mu_eta <- posterior_summary(x, "mu_eta")
     rownames(mu_eta) <- strip_variable(rownames(mu_eta))
     print(mu_eta, digits = digits)
 
     cat("\nPopulation heterogeniety posterior tau_eta\n")
-    tau_eta <- summary(x$stanfit, pars = c("tau_eta"), probs = probs)$summary
+    tau_eta <- posterior_summary(x, "tau_eta")
     rownames(tau_eta) <- strip_variable(rownames(tau_eta))
     print(tau_eta, digits = digits)
 
     cat("\nPopulation correlation posterior Sigma_corr_eta\n")
     ## TODO: do not display symmetric values
-    Sigma_corr_eta <- summary(
-      x$stanfit,
-      pars = c("Sigma_corr_eta"),
-      probs = probs
-    )$summary
+    Sigma_corr_eta <- posterior_summary(x, "Sigma_corr_eta")
     rownames(Sigma_corr_eta) <- strip_variable(rownames(Sigma_corr_eta))
     print(Sigma_corr_eta, digits = digits)
   } else {
     cat("\nNo interaction model posterior specified.\n")
   }
 
-  if (x$stanfit@stan_args[[1]]$algorithm == "NUTS") {
-    div_trans <- sum(rstan::get_divergent_iterations(x$stanfit))
+  if (identical(x$metadata_mcmc$algorithm, "NUTS")) {
+    div_trans <- sum(nuts_params(x, pars = "divergent__")$Value)
     num_sim <- nsamples(x)
     if (div_trans > 0) {
       warning(
@@ -1786,50 +1781,6 @@ print.blrmfit <- function(x, ..., prob = 0.95, digits = 2) {
 }
 
 ## internal -----
-
-#'
-#' Utility function to label parameter indices according to factor
-#' levels.
-#' @param stanfit stan fit which names are being modified
-#' @param par parameter selected
-#' @param ... must include as many factors as there are indices which
-#'     are used in the order given to translate indices to text labels
-#'
-#' @keywords internal
-.label_index <- function(stanfit, par, ...) {
-  idx <- grep(paste0("^", par, "\\["), names(stanfit))
-  str <- names(stanfit)[idx]
-  fct <- list(...)
-  idx_str <- t(sapply(
-    strsplit(gsub("(.*)\\[([0-9,]*)\\]$", "\\2", str), ","),
-    as.numeric
-  ))
-  if (length(fct) == 1) {
-    idx_str <- matrix(idx_str, ncol = 1)
-  }
-  ni <- ncol(idx_str)
-  colnames(idx_str) <- paste0("idx_", seq_len(ni))
-  idx_str <- as.data.frame(idx_str)
-  assert_that(
-    ni == length(fct),
-    msg = "Insufficient number of indices specified"
-  )
-  for (i in seq_len(ni)) {
-    f <- fct[[i]]
-    key <- data.frame(idx = seq_len(nlevels(f)), label = levels(f))
-    names(key) <- paste0(names(key), "_", i)
-    idx_str <- left_join(idx_str, key, by = paste0("idx_", i))
-  }
-  labs <- paste0("label_", seq_len(ni))
-  names(stanfit)[idx] <- paste0(
-    par,
-    "[",
-    do.call(paste, c(idx_str[labs], list(sep = ","))),
-    "]"
-  )
-  stanfit
-}
-
 
 #' @keywords internal
 .abbreviate_label <- function(label) {

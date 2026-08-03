@@ -45,6 +45,7 @@
 #' @importFrom matrixStats logSumExp
 #' @importFrom stats delete.response ftable median model.frame model.matrix model.response quantile rbinom sd terms model.matrix.default setNames update update.default .getXlevels as.formula na.fail qlogis dbinom uniroot qnorm
 #' @importFrom lifecycle deprecated deprecate_warn deprecate_stop
+#' @importFrom Rdpack reprompt
 #' @import assertthat
 #' @import RBesT
 #' @import checkmate

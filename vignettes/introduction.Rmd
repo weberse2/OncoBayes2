@@ -9,6 +9,8 @@ vignette: >
   %\VignetteIndexEntry{Guiding Oncology Dose-Escalation Trials}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
+bibliography: references.bib
+link-citations: true
 ---
   
 ```{r, child="settings-knitr.txt"}
@@ -39,7 +41,7 @@ data collected prior trial conduct or concurrent data, which is
 collected during trial conduct in the context of another trial/context.
 
 The package supports incorporation of additional data through a
-Meta-Analytic-Combined (MAC) framework [1]. Within the MAC model the
+Meta-Analytic-Combined (MAC) framework [@neuenschwander2016codata]. Within the MAC model the
 heterogeneous sources of data are assigned to *groups* and information
 is shared across groups through a hierarchical model structure. For
 any given group this leads to borrowing strength from all other groups
@@ -73,8 +75,9 @@ on each drug individually from separate trials. This example will be
 expanded by using in addition concurrent data on one of the drugs and
 on their combination.
 
-**Note on terminology:** While in the literature (see [1], [2], and
-[4]) the term *stratum* refers to a trial commonly, `OncoBayes2`
+**Note on terminology:** While in the literature (see
+[@neuenschwander2016codata; @neuenschwander2016exnex; @neuenschwander2014])
+the term *stratum* refers to a trial commonly, `OncoBayes2`
 deviates here and uses the term *group* instead. This is more in line
 with hierarchical modeling terminology. The term *stratum* is used to
 define a higher level grouping structure. That is, every group is
@@ -94,7 +97,7 @@ library(ggplot2) ## for plotting
 
 ## Example use-case: Dual combination trial with historical information
 
-Consider the application described in Section 3.2 of [1], in which the
+Consider the application described in Section 3.2 of [@neuenschwander2016codata], in which the
 risk of DLT is to be studied as a function of dose for two drugs, drug
 A and drug B. Historical information on the toxicity profiles of these
 two drugs is available from single agent trials `trial_A` and
@@ -141,12 +144,12 @@ One begins with `blrm_trial` by specifying three key design elements:
 
 Information about the study drugs is encoded through a `tibble` as below. 
 This includes the names of the study-drugs, the reference doses (see 
-[3] or `?blrm_exnex` to understand the role this choice plays in the
+[@neuenschwander2008] or `?blrm_exnex` to understand the role this choice plays in the
 model specification), the dosing units, and (optionally) the a priori
 expected DLT rate for each study drug given individually at the respective
 reference doses.
 
-All design information for the study described in [1] is also included as
+All design information for the study described in [@neuenschwander2016codata] is also included as
 built-in datasets, which are part of the `OncoBayes2` package.
 
 #### Drug info
@@ -203,8 +206,8 @@ is not recommended for actual trials as the prior should be chosen
 deliberately and there is no guarantee that the simplified prior will
 remain stable across releases of the package. See
 `?'example-combo2_trial'` for an example of #2. The below choice of
-prior broadly follows the case study in [4], although we slightly
-deviate from the model in [4] by a different reference dose and mean
+prior broadly follows the case study in [@neuenschwander2014], although we slightly
+deviate from the model in [@neuenschwander2014] by a different reference dose and mean
 reference DLT rate.
 
 To employ the simplified prior, and fit the model with MCMC:
@@ -248,7 +251,7 @@ kable(summary(combo2_trial_start, "dose_prediction"), digits = 2)
 
 Such summaries may be used to assess which combination doses have
 unacceptable high risk of toxicity. For example, according to the escalation
-with overdose control (EWOC) design criteria [3], one would compute the
+with overdose control (EWOC) design criteria [@neuenschwander2008], one would compute the
 posterior probability that each dose is excessively toxic (column 
 `prob_overdose`; note that the definition of "excessively toxic" is
 encoded in the `blrm_trial` object through the `interval_prob` argument),
@@ -265,7 +268,7 @@ is required to ensure that the MCMC chains have converged and that the
 number of samples representing the posterior is large enough to
 estimate desired quantities of interest with sufficient accuracy. The
 `OncoBayes2` package automatically warns in case of non-convergence as
-indicated by the Rhat diagnostic [5]. All model parameters must have an
+indicated by the Rhat diagnostic [@vehtari2021]. All model parameters must have an
 Rhat of less than $1.1$ (values much larger than $1.0$ indicate
 non-convergence).
 
@@ -437,7 +440,7 @@ kable(select(scenario_inference, -group_id, -stratum_id, -dose_id),
 
 ## Continuation of example: Using concurrent data
 
-In the example of [1], at the time of completion of the first stage of
+In the example of [@neuenschwander2016codata], at the time of completion of the first stage of
 `trial_AB`, the following additional data was observed.
 
 ```{r}
@@ -496,7 +499,7 @@ admissible dose allowed by EWOC towards higher doses for drug B
 whenever drug A is 6 mg. This reflects that drug A has been observed
 to be relatively safe, since no DLT was observed for a number of doses.
 
-In the example of [1], during the conduct of the second stage of the
+In the example of [@neuenschwander2016codata], during the conduct of the second stage of the
 `trial_AB` an additional external data source from a new trial became
 available. This time it is stemming from another trial which is 
 an investigator-initiated trial `IIT` of the same combination.
@@ -562,7 +565,8 @@ A brief note on terminology: the `group_id` variable, present in the `data`
 and `dose_info` arguments of a `blrm_trial` object, divides observations and
 dose levels into homogeneous groups sharing the same set of parameters
 in the hierarchical model. These `group_id`'s are referred to as "strata"
-in [1], [2], and [4]. No confusion should arise between this terminology
+in [@neuenschwander2016codata], [@neuenschwander2016exnex], and
+[@neuenschwander2014]. No confusion should arise between this terminology
 and the `stratum_id` variable, an optional set of higher-level stratifying
 factors which can serve to divide the `group_id`'s into classes which 
 share the same heterogeneity parameters. For more information on models
@@ -573,28 +577,7 @@ section of `?blrm_exnex` on differential discounting, and to
 
 ## References
 
-[1] Neuenschwander, B., Roychoudhury, S., & Schmidli, H. (2016). On
-the use of co-data in clinical trials. Statistics in Biopharmaceutical
-Research, 8(3), 345-354.
-
-[2] Neuenschwander, B., Wandel, S., Roychoudhury, S., & Bailey,
-S. (2016). Robust exchangeability designs for early phase clinical
-trials with multiple strata. Pharmaceutical statistics, 15(2),
-123-134.
-
-[3] Neuenschwander, B., Branson, M., & Gsponer, T. (2008). Critical
-aspects of the Bayesian approach to phase I cancer trials. Statistics
-in medicine, 27(13), 2420-2439.
-
-[4] Neuenschwander, B., Matano, A., Tang, Z., Roychoudhury, S.,
-Wandel, S. Bailey, Stuart. (2014). A Bayesian Industry Approach to
-Phase I Combination Trials in Oncology. In Statistical methods in drug
-combination studies (Vol. 69). CRC Press.
-
-[5] Vehtari, A., Gelman, A., Simpson, D., Carpenter, B., Bürkner,
-P. C. (2021). Rank-Normalization, Folding, and Localization: An
-Improved ($\hat{R}$) for Assessing Convergence of MCMC,
-Bayesian Analysis, 16 (2), 667–718. https://doi.org/10.1214/20-BA1221
+<div id="refs"></div>
 
 ## Session Info
 

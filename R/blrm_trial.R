@@ -699,7 +699,7 @@ print.blrm_trial <- function(x, ...) {
   ## fixed soon)
   post <- as_draws_matrix(rvar(
     posterior_linpred(trial, transform = TRUE, newdata = newdata),
-    nchains = trial$blrmfit$stanfit@sim$chains
+    nchains = posterior::nchains(trial$blrmfit$draws)
   ))
 
   check_sum <- summarise_draws(post, check_fn)

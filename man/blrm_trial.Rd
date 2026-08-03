@@ -250,13 +250,9 @@ options(.user_mc_options)
 
 }
 \references{
-Babb, J., Rogatko, A., & Zacks, S. (1998). Cancer
-phase I clinical trials: efficient dose escalation with overdose
-control. \emph{Statistics in medicine}, 17(10), 1103-1120.
+\insertRef{babb1998}{OncoBayes2}
 
-Neuenschwander, B., Roychoudhury, S., & Schmidli, H.
-(2016). On the use of co-data in clinical trials. \emph{Statistics in
-Biopharmaceutical Research}, 8(3), 345-354.
+\insertRef{neuenschwander2016codata}{OncoBayes2}
 }
 \seealso{
 Other blrm_trial combo2 example: 

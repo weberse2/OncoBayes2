@@ -530,21 +530,11 @@ options(.user_mc_options)
 
 }
 \references{
-Neuenschwander, B., Roychoudhury, S., & Schmidli, H.
-(2016). On the use of co-data in clinical trials. \emph{Statistics in
-Biopharmaceutical Research}, 8(3), 345-354.
+\insertRef{neuenschwander2016codata}{OncoBayes2}
 
-Neuenschwander, B., Wandel, S., Roychoudhury, S., &
-Bailey, S. (2016). Robust exchangeability designs for early phase
-clinical trials with multiple strata. \emph{Pharmaceutical
-statistics}, 15(2), 123-134.
+\insertRef{neuenschwander2016exnex}{OncoBayes2}
 
-Neuenschwander, B., Branson, M., & Gsponer, T. (2008).
-Critical aspects of the Bayesian approach to phase I cancer trials.
-\emph{Statistics in medicine}, 27(13), 2420-2439.
+\insertRef{neuenschwander2008}{OncoBayes2}
 
-Neuenschwander, B., Matano, A., Tang, Z., Roychoudhury, S.,
-Wandel, S. Bailey, Stuart. (2014). A Bayesian Industry Approach to
-Phase I Combination Trials in Oncology. In \emph{Statistical methods
-in drug combination studies} (Vol. 69). CRC Press.
+\insertRef{neuenschwander2014}{OncoBayes2}
 }

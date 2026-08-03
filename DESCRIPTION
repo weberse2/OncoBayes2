@@ -9,8 +9,7 @@ Description: Bayesian logistic regression model with optional
   drugs. Please refer to Neuenschwander et al. (2008)
   <doi:10.1002/sim.3230> and Neuenschwander et al. (2016)
   <doi:10.1080/19466315.2016.1174149> for details on the methodology.
-Version: 0.9-4
-Date: 2025-12-17
+Version: 0.10-0
 Authors@R: c(person("Novartis", "Pharma AG", role = "cph")
             ,person("Sebastian", "Weber", email="sebastian.weber@novartis.com", role=c("aut", "cre"))
             ,person("Lukas A.", "Widmer", email="lukas_andreas.widmer@novartis.com", role="aut")
@@ -19,7 +18,7 @@ Authors@R: c(person("Novartis", "Pharma AG", role = "cph")
 	    )
 Depends:
     R (>= 3.5.0),
-    RBesT (>= 1.8-0)
+    RBesT (>= 1.8-2)
 Imports:
     methods,
     Rcpp (>= 0.12.0),
@@ -44,7 +43,8 @@ Imports:
     matrixStats,
     brms,
     lifecycle,
-    grDevices
+    grDevices,
+    Rdpack
 LinkingTo:
     BH (>= 1.75.0),
     Rcpp (>= 0.12.0),
@@ -70,6 +70,7 @@ Suggests:
 Additional_repositories:
     https://stan-dev.r-universe.dev
 VignetteBuilder: knitr
+RdMacros: Rdpack
 Biarch: true
 SystemRequirements: GNU make, pandoc (>= 1.12.3), pngquant, C++17
 Encoding: UTF-8

@@ -104,6 +104,34 @@ test_that("blrm_exnex data handling consistency combo2 with cmdstanr backend", {
   })
 })
 
+test_that("cmdstanr draws exclude raw and auxiliary variables by default", {
+  skip_if_not_installed("cmdstanr")
+  skip_on_cran()
+  withr::with_options(list(OncoBayes2.MC.backend = "cmdstanr"), {
+    combo2_cmdstanr <- run_example("combo2")
+    variables <- posterior::variables(combo2_cmdstanr$blrmfit$draws)
+    excluded <- c(
+      "log_beta_raw",
+      "eta_raw",
+      "tau_log_beta_raw",
+      "tau_eta_raw",
+      "L_corr_log_beta",
+      "L_corr_eta",
+      "beta",
+      "eta",
+      "beta_EX_prob",
+      "eta_EX_prob"
+    )
+    excluded_pattern <- paste0(
+      "^(",
+      paste(excluded, collapse = "|"),
+      ")(\\[|$)"
+    )
+    expect_false(any(grepl(excluded_pattern, variables)))
+    expect_true(any(grepl("^beta_group\\[", variables)))
+  })
+})
+
 test_that("blrm_exnex data handling consistency combo3 with cmdstanr backend", {
   skip_if_not_installed("cmdstanr")
   skip_on_cran()
@@ -1510,10 +1538,7 @@ test_that("blrm_exnex posterior predictons are not randomly shuffled in their or
   ## as some MCMC diagnostics rely on the original order of the MCMC
   ## chain, we test here for the intercept that no permutation is
   ## being done
-  post_rv <- posterior::as_draws_rvars(as.array(
-    single_agent$blrmfit$stanfit,
-    pars = "beta_group"
-  ))
+  post_rv <- as_draws_rvars(single_agent$blrmfit, variable = "beta_group")
   post_pl <- posterior_linpred(
     single_agent$blrmfit,
     newdata = mutate(hist_SA, drug_A = single_agent$dref)[1, ]

@@ -3,6 +3,13 @@
 #
 
 make_ds <- function() {
+  # Pre-create data/ using base dir.create so that usethis::use_data() finds it
+  # already present and skips its own fs::dir_create() call. On some bind-mounted
+  # filesystems (e.g. Docker Desktop's "fakeowner" share) fs::dir_create() fails
+  # with "[EACCES] Failed to set permissions for directory" because it tries to
+  # chmod the freshly created directory; base dir.create() does not and works.
+  if (!dir.exists("data")) dir.create("data")
+
   examples <- new.env()
   flist <- list.files("data-raw", pattern = "*[.]R")
   for (f in flist) source(file.path("data-raw", f), examples)
@@ -75,7 +82,7 @@ make_internal_ds <- function() {
   calibration_meta["MD5"] <- vals["MD5"]
 
   pkg_create_date <- Sys.time()
-  pkg_sha <- "86ad52c"
+  pkg_sha <- "35f23b6"
 
   if (gsub("\\$", "", pkg_sha) == "Format:%h") {
     pkg_sha <- system("git rev-parse --short HEAD", intern = TRUE)
