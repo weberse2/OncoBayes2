@@ -50,6 +50,25 @@ run_example <- function(example) {
   invisible(env)
 }
 
+## Skip a test unless both the cmdstanr package and a usable CmdStan
+## installation are available. skip_if_not_installed("cmdstanr") only checks
+## for the R package, but the cmdstanr backend additionally needs a compiled
+## CmdStan toolchain (absent on e.g. CI), without which model compilation
+## fails with "CmdStan path has not been set yet".
+skip_if_no_cmdstan <- function() {
+  testthat::skip_if_not_installed("cmdstanr")
+  cmdstan_available <- tryCatch(
+    {
+      ver <- cmdstanr::cmdstan_version(error_on_NA = FALSE)
+      !is.null(ver) && !is.na(ver)
+    },
+    error = function(e) FALSE
+  )
+  if (!isTRUE(cmdstan_available)) {
+    testthat::skip("CmdStan toolchain not available")
+  }
+}
+
 
 ## set up slim sampling in case we are on CRAN
 if (identical(Sys.getenv("NOT_CRAN"), "true")) {

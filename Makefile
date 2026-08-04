@@ -205,17 +205,17 @@ derived : NAMESPACE $(BIN_OBJS) $(DOC_OBJS)
 PHONY += r-source-check
 r-source-check : r-source
 	cd build; tar xvzf $(RPKG)-source.tar.gz
-	cd build; time NOT_CRAN=true $(RCMD) CMD check $(RPKG)
+	cd build; time env NOT_CRAN=true $(RCMD) CMD check $(RPKG)
 
 PHONY += r-source-release-check
 r-source-release-check : r-source-release
 	cd build; tar xvzf $(RPKG)_$(PKG_VERSION).tar.gz
-	cd build; time NOT_CRAN=true $(RCMD) CMD check $(RPKG)
+	cd build; time env NOT_CRAN=true $(RCMD) CMD check $(RPKG)
 
 PHONY += r-source-release-check
 r-source-cran-check : r-source-release
 	cd build; tar xvzf $(RPKG)_$(PKG_VERSION).tar.gz
-	cd build; time NOT_CRAN=false $(RCMD) CMD check --as-cran $(RPKG)
+	cd build; time env NOT_CRAN=false $(RCMD) CMD check --as-cran $(RPKG)
 
 build/installed/$(RPKG)/DESCRIPTION : build/r-source-fast
 	rm -rf build/installed

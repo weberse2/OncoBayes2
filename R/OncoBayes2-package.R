@@ -53,11 +53,9 @@
 #' @import rstantools
 #' @import dplyr
 #' @import tidyr
-#' @import ggplot2
 #' @importFrom tibble as_tibble
 #' @importFrom tidyselect vars_select_helpers vars_select
 #' @importFrom rlang env_bury .data
-#' @importFrom scales number_format extended_breaks
 #' @import abind
 #' @export posterior_linpred posterior_predict posterior_interval
 #' @export predictive_interval prior_summary nsamples

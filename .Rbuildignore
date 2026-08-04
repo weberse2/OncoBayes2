@@ -5,6 +5,7 @@
 ^.gitignore$
 ^.github$
 ^.gitattributes$
+^codecov\.yml$
 ^AGENTS\.md$
 ^inst/extra/install.*$
 ^src/.*so$
@@ -25,6 +26,8 @@
 ^tests/figs/*$
 ^tests/testthat/_snaps/*$
 ^tests/testthat/fixtures/.*$
+^tests/testthat/fixtures-src$
+^tests/testthat/fixtures-src/.*$
 ^plot-snaps.tar.gz$
 ^_pkgdown\.yml$
 ^docs$
