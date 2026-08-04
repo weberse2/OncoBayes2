@@ -1,4 +1,4 @@
-# OncoBayes2 0.10-0 - August 3rd, 2026
+# OncoBayes2 0.10-0 - August 4th, 2026
 
 ## Enhancements
 

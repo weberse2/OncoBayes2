@@ -47,7 +47,9 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck
+          extra-packages: |
+            any::rcmdcheck
+            stan-dev/cmdstanr
           needs: check
 
       - uses: r-lib/actions/check-r-package@v2
@@ -91,7 +93,14 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck any::devtools any::roxygen2 any::rmarkdown any::knitr any::here
+          extra-packages: |
+            any::rcmdcheck
+            any::devtools
+            any::roxygen2
+            any::rmarkdown
+            any::knitr
+            any::here
+            stan-dev/cmdstanr
           needs: check
 
       - name: Build release artifacts
