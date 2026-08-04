@@ -50,6 +50,25 @@ run_example <- function(example) {
   invisible(env)
 }
 
+## Skip a test unless both the cmdstanr package and a usable CmdStan
+## installation are available. skip_if_not_installed("cmdstanr") only checks
+## for the R package, but the cmdstanr backend additionally needs a compiled
+## CmdStan toolchain (absent on e.g. CI), without which model compilation
+## fails with "CmdStan path has not been set yet".
+skip_if_no_cmdstan <- function() {
+  testthat::skip_if_not_installed("cmdstanr")
+  cmdstan_available <- tryCatch(
+    {
+      ver <- cmdstanr::cmdstan_version(error_on_NA = FALSE)
+      !is.null(ver) && !is.na(ver)
+    },
+    error = function(e) FALSE
+  )
+  if (!isTRUE(cmdstan_available)) {
+    testthat::skip("CmdStan toolchain not available")
+  }
+}
+
 
 ## set up slim sampling in case we are on CRAN
 if (identical(Sys.getenv("NOT_CRAN"), "true")) {
@@ -88,25 +107,12 @@ array2mix <- function(a, p) {
 sample_prior_mean <- function(blrmfit) {
   ps <- prior_summary(blrmfit)
 
-  num_groups <- ps$num_groups
-  num_strata <- ps$num_strata
   num_comp <- dim(ps$EX_mu_log_beta)[2]
   has_inter <- ps$has_inter
   num_inter <- 0
   if (has_inter) {
     num_inter <- length(grep("^m", dimnames(ps$EX_mu_eta)$prior))
   }
-
-  draw <- list(
-    log_beta_raw = array(0, c(2 * num_groups, num_comp, 2)),
-    eta_raw = array(0, c(2 * num_groups, num_inter)),
-    mu_log_beta = array(0, c(num_comp, 2)),
-    tau_log_beta_raw = array(1, c(num_strata, num_comp, 2)),
-    L_corr_log_beta = abind(replicate(num_comp, diag(2), FALSE), along = -1),
-    mu_eta = array(0, c(num_inter)),
-    tau_eta_raw = array(1, c(num_strata, num_inter)),
-    L_corr_eta = diag(num_inter)
-  )
 
   EX_m_intercept <- apply(
     ps$EX_mu_log_beta["weight", , , drop = FALSE] *
@@ -121,65 +127,68 @@ sample_prior_mean <- function(blrmfit) {
     sum
   )
 
-  NEX_m_intercept <- apply(
-    ps$NEX_mu_log_beta["weight", , , drop = FALSE] *
-      ps$NEX_mu_log_beta["m_intercept", , , drop = FALSE],
-    c(1, 2),
-    sum
-  )
-  NEX_m_log_slope <- apply(
-    ps$NEX_mu_log_beta["weight", , , drop = FALSE] *
-      ps$NEX_mu_log_beta["m_log_slope", , , drop = FALSE],
-    c(1, 2),
-    sum
-  )
-
-  draw$log_beta_raw <- abind(
-    c(
-      replicate(
-        num_groups,
-        abind(EX_m_intercept, EX_m_log_slope, along = 3),
-        simplify = FALSE
-      ),
-      replicate(
-        num_groups,
-        abind(NEX_m_intercept, NEX_m_log_slope, along = 3),
-        simplify = FALSE
+  variables <- character()
+  values <- numeric()
+  for (group in levels(blrmfit$group_fct)) {
+    for (component_id in seq_len(num_comp)) {
+      component <- levels(blrmfit$labels$component)[component_id]
+      variables <- c(
+        variables,
+        paste0("beta_group[", group, ",", component, ",intercept]"),
+        paste0("beta_group[", group, ",", component, ",slope]")
       )
-    ),
-    along = 1
-  )
-
+      values <- c(
+        values,
+        EX_m_intercept[component_id],
+        exp(EX_m_log_slope[component_id])
+      )
+    }
+  }
   if (has_inter) {
     EX_mu_eta <- array(
       summary(array2mix(ps$EX_mu_eta, num_inter))$mean,
       num_inter
     )
-    NEX_mu_eta <- array(
-      summary(array2mix(ps$NEX_mu_eta, num_inter))$mean,
-      num_inter
-    )
-    draw$eta_raw <- abind(
-      c(
-        replicate(num_groups, EX_mu_eta, simplify = FALSE),
-        replicate(num_groups, NEX_mu_eta, simplify = FALSE)
-      ),
-      along = -1
-    )
+    for (group in levels(blrmfit$group_fct)) {
+      for (inter_id in seq_len(num_inter)) {
+        inter <- levels(blrmfit$labels$param_eta)[inter_id]
+        variables <- c(
+          variables,
+          paste0("eta_group[", group, ",", inter, "]")
+        )
+        values <- c(
+          values,
+          EX_mu_eta[inter_id]
+        )
+      }
+    }
   }
 
-  msg <- capture.output(
-    blrmfit$stanfit <- sampling(
-      OncoBayes2:::stanmodels$blrm_exnex,
-      data = blrmfit$standata,
-      chains = 1,
-      iter = 1,
-      warmup = 0,
-      seed = 23542,
-      init = list(draw),
-      algorithm = "Fixed_param",
-      open_progress = FALSE
+  blrmfit$draws <- posterior::as_draws_array(
+    array(
+      values,
+      dim = c(1, 1, length(values)),
+      dimnames = list(
+        NULL,
+        "chain:1",
+        variables
+      )
     )
   )
+  blrmfit$draws_warmup <- NULL
+  blrmfit$draws_diag <- NULL
+  blrmfit$draws_warmup_diag <- NULL
+  blrmfit$metadata_mcmc <- modifyList(
+    blrmfit$metadata_mcmc,
+    list(
+      iter = posterior::niterations(blrmfit$draws),
+      warmup = 0L,
+      chains = posterior::nchains(blrmfit$draws),
+      save_warmup = FALSE,
+      algorithm = "Fixed_param"
+    ),
+    keep.null = TRUE
+  )
+  blrmfit$stanfit <- NULL
   blrmfit
 }

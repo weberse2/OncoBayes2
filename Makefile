@@ -24,12 +24,15 @@ R_SRCS = $(wildcard *.R $(foreach fd, $(SRCDIR), $(fd)/*.R))
 R_TEST_SRCS = $(wildcard tests/testthat/test*.R)
 R_TEST_OBJS = $(R_TEST_SRCS:.R=.Rtest)
 R_TESTFAST_OBJS = $(R_TEST_SRCS:.R=.Rtestfast)
+FIXTURE_SRCS = $(wildcard tests/testthat/fixtures-src/*_fixture.R)
+FIXTURE_OBJS = $(patsubst tests/testthat/fixtures-src/%_fixture.R,tests/testthat/fixtures/%.rds,$(FIXTURE_SRCS))
 RMD_SRCS = $(wildcard *.Rmd $(foreach fd, $(SRCDIR), $(fd)/x*.Rmd))
 STAN_SRCS = $(wildcard *.stan $(foreach fd, $(SRCDIR), $(fd)/*.stan))
 SRCS = $(R_PKG_SRCS) $(R_SRCS) $(RMD_SRCS) $(STAN_SRCS)
 NODIR_SRC = $(notdir $(SRCS))
 BIN_OBJS = src/package-binary R/sysdata.rda
-DOC_OBJS = man/package-doc inst/doc/$(RPKG).pdf
+VIGNETTE_BIB = vignettes/references.bib
+DOC_OBJS = man/package-doc inst/doc/$(RPKG).pdf $(VIGNETTE_BIB)
 RCMD ?= R_PROFILE_USER="$(PROJROOT_ABS)/.Rprofile" "${R_HOME}/bin/R" -q
 
 R_HOME ?= $(shell R RHOME)
@@ -43,6 +46,27 @@ all : $(TARGET)
 
 inst/doc_html/%.html : man/%.Rd
 	"${R_HOME}/bin/R" --vanilla --slave -e 'tools::Rd2HTML("$<", out="$@")'
+
+# Single-source bibliography: vignettes/references.bib is a GENERATED copy of
+# inst/REFERENCES.bib (the single source of truth for all references, also used
+# by Rdpack for the Rd help pages). It is committed so that pkgdown and
+# R CMD build (which do not run this rule) can render the vignettes/articles,
+# and it is refreshed here so it never drifts from the master file.
+$(VIGNETTE_BIB) : inst/REFERENCES.bib
+	@echo '% !! GENERATED FILE - DO NOT EDIT BY HAND !!' > $@
+	@echo '% This is an auto-generated copy of inst/REFERENCES.bib.' >> $@
+	@echo '% The single source of truth is inst/REFERENCES.bib; edit that file' >> $@
+	@echo '% and run `make vignettes/references.bib` (also run by `make doc`).' >> $@
+	@echo '%' >> $@
+	@echo '' >> $@
+	@cat $< >> $@
+	@echo "Regenerated $@ from inst/REFERENCES.bib"
+
+# Guard against a stale committed copy (skips the 6-line generated header).
+check-bib :
+	@tail -n +7 $(VIGNETTE_BIB) | diff - inst/REFERENCES.bib > /dev/null \
+	  || { echo "ERROR: $(VIGNETTE_BIB) is out of sync with inst/REFERENCES.bib. Run 'make $(VIGNETTE_BIB)'."; exit 1; }
+	@echo "$(VIGNETTE_BIB) is in sync with inst/REFERENCES.bib"
 
 # tell makefile how to turn a Rmd into an md file
 %.md : %.Rmd
@@ -58,15 +82,19 @@ inst/doc_html/%.html : man/%.Rd
 	cd $(@D); echo running $(RCMD) -e "rmarkdown::render('$(<F)', output_format=rmarkdown::html_document(self_contained=TRUE))"
 	cd $(@D); $(RCMD) -e "rmarkdown::render('$(<F)', output_format=rmarkdown::html_document(self_contained=TRUE))"
 
-tests/%.Rtest : tests/%.R $(R_PKG_SRCS) NAMESPACE
-	NOT_CRAN=true $(RCMD) -e "devtools::load_all()" -e "system.time(test_file('$<'))" > $@ 2>&1
+tests/%.Rtest : tests/%.R $(R_PKG_SRCS) NAMESPACE $(FIXTURE_OBJS) tools/run-test-file.R
+	NOT_CRAN=true $(RCMD) --slave --file=tools/run-test-file.R --args $< > $@ 2>&1
 	@printf "Test summary for $(<F): "
 	@grep '^\[' $@ | tail -n 1
 
-tests/%.Rtestfast : tests/%.R $(R_PKG_SRCS) NAMESPACE
-	NOT_CRAN=false $(RCMD) -e "devtools::load_all()" -e "system.time(test_file('$<'))" > $@ 2>&1
+tests/%.Rtestfast : tests/%.R $(R_PKG_SRCS) NAMESPACE tools/run-test-file.R
+	NOT_CRAN=false $(RCMD) --slave --file=tools/run-test-file.R --args $< > $@ 2>&1
 	@printf "Test summary for $(<F): "
 	@grep '^\[' $@ | tail -n 1
+
+tests/testthat/fixtures/%.rds : tests/testthat/fixtures-src/%_fixture.R tools/build-test-fixture.R $(R_PKG_SRCS) NAMESPACE
+	install -d $(@D)
+	FIXTURE_FORCE=$(FIXTURE_FORCE) $(RCMD) --slave --file=tools/build-test-fixture.R --args $< $@
 
 
 R/stanmodels.R: $(STAN_SRCS)
@@ -166,6 +194,8 @@ $(HTML_DOC_DIR):
 PHONY += r-source-release
 r-source-release : build/r-source-release
 
+PHONY += check-bib
+
 PHONY += binary
 binary : NAMESPACE src/package-binary
 
@@ -175,17 +205,17 @@ derived : NAMESPACE $(BIN_OBJS) $(DOC_OBJS)
 PHONY += r-source-check
 r-source-check : r-source
 	cd build; tar xvzf $(RPKG)-source.tar.gz
-	cd build; time NOT_CRAN=true $(RCMD) CMD check $(RPKG)
+	cd build; time env NOT_CRAN=true $(RCMD) CMD check $(RPKG)
 
 PHONY += r-source-release-check
 r-source-release-check : r-source-release
 	cd build; tar xvzf $(RPKG)_$(PKG_VERSION).tar.gz
-	cd build; time NOT_CRAN=true $(RCMD) CMD check $(RPKG)
+	cd build; time env NOT_CRAN=true $(RCMD) CMD check $(RPKG)
 
 PHONY += r-source-release-check
 r-source-cran-check : r-source-release
 	cd build; tar xvzf $(RPKG)_$(PKG_VERSION).tar.gz
-	cd build; time NOT_CRAN=false $(RCMD) CMD check --as-cran $(RPKG)
+	cd build; time env NOT_CRAN=false $(RCMD) CMD check --as-cran $(RPKG)
 
 build/installed/$(RPKG)/DESCRIPTION : build/r-source-fast
 	rm -rf build/installed
@@ -193,10 +223,43 @@ build/installed/$(RPKG)/DESCRIPTION : build/r-source-fast
 	cd build; $(RCMD) CMD INSTALL --library=./installed --no-docs --no-multiarch --no-test-load --no-clean-on-error $(RPKG)-source.tar.gz
 
 docs/index.html : doc $(SRCS)
-	NOT_CRAN=true $(RCMD) -e 'pkgdown::build_site()'
+	cp -f man-roxygen/start-example.R man-roxygen/start-example.R.slim.bak; \
+	cp -f man-roxygen/start-example-full.R man-roxygen/start-example.R; \
+	"${R_HOME}/bin/Rscript" -e 'roxygen2::roxygenize(roclets="rd")'; \
+	status=0; NOT_CRAN=true $(RCMD) -e 'pkgdown::build_site()' || status=$$?; \
+	mv -f man-roxygen/start-example.R.slim.bak man-roxygen/start-example.R; \
+	"${R_HOME}/bin/Rscript" -e 'roxygen2::roxygenize(roclets="rd")'; \
+	exit $$status
 
 PHONY += pkgdown
 pkgdown: docs/index.html
+
+# Reverse dependency checks.
+# REVDEP_WORKERS: reverse deps checked in parallel (each in its own subprocess).
+# REVDEP_JOBS: C++ compile threads per package build (-jN). Keep
+# REVDEP_WORKERS * REVDEP_JOBS near your core count and watch RAM: Stan/rstan
+# builds are memory hungry.
+REVDEP_WORKERS ?= 6
+REVDEP_JOBS ?= 1
+
+# Local run against the current working tree (includes uncommitted changes).
+# Prerequisites make the source tree buildable/installable by revdepcheck:
+# NAMESPACE + man/*.Rd (via NAMESPACE), compiled Stan src/ and R/sysdata.rda
+# (via BIN_OBJS). The PDF manual/vignettes are intentionally omitted:
+# revdepcheck builds with --no-manual --no-build-vignettes.
+PHONY += revdepcheck
+revdepcheck: NAMESPACE $(BIN_OBJS)
+	$(RCMD) -e 'if (!requireNamespace("revdepcheck", quietly=TRUE)) pak::pak("r-lib/revdepcheck")'
+	MAKEFLAGS="-j$(REVDEP_JOBS)" $(RCMD) -e 'revdepcheck::revdep_check(num_workers = $(REVDEP_WORKERS))'
+
+# Run on GitHub's standard runners via workflow_dispatch. Uses the *pushed* tip
+# of the current branch, NOT your local tree: commit and push before running.
+PHONY += revdepcheck-ci
+revdepcheck-ci:
+	gh workflow run revdepcheck.yaml --ref "$$(git rev-parse --abbrev-ref HEAD)"
+	sleep 5
+	gh run watch --exit-status
+	gh run download -n revdep-results || true
 
 PHONY += dev-install
 dev-install: build/installed/$(RPKG)/DESCRIPTION
@@ -212,6 +275,13 @@ retestfast-all : clean-test $(R_TESTFAST_OBJS)
 
 PHONY += retest-all
 retest-all : clean-test $(R_TEST_OBJS)
+
+PHONY += test-fixtures
+test-fixtures : $(FIXTURE_OBJS)
+
+PHONY += clean-fixtures
+clean-fixtures :
+	rm -f $(FIXTURE_OBJS)
 
 PHONY += check-winbuilder-devel
 check-winbuilder-devel : r-source-release
@@ -239,7 +309,7 @@ check-winbuilder : check-winbuilder-devel check-winbuilder-release check-winbuil
 #    $(CC) -o $@ $(CFLAGS) -c $< $(INC_DIRS)
 
 PHONY += clean
-clean:
+clean: clean-fixtures
 	rm -rf build/*
 	rm -f man/*.Rd
 	rm -f NAMESPACE

@@ -1,19 +1,26 @@
 # History files
 .Rhistory
 .Rapp.history
+*.Rhistory
 
 # Session Data files
 .RData
 .RDataTmp
+*.RData
 
 # User-specific files
 .Ruserdata
+.Rprofile
+.DS_Store
+**/.DS_Store
 
 # Example code in package build process
 *-Ex.R
 
 # Output files from R CMD build
 /*.tar.gz
+/*.md5
+/build/
 
 # Output files from R CMD check
 /*.Rcheck/
@@ -35,6 +42,7 @@ vignettes/*.pdf
 # Temporary files created by R markdown
 *.utf8.md
 *.knit.md
+*_files/
 
 # R Environment Variables
 .Renviron
@@ -60,3 +68,62 @@ man
 .RData
 .Ruserdata
 docs
+
+# Editor and local scratch files
+*~
+\#*#
+.#*
+*.bak
+*.tmp
+*.log
+/tee
+/test
+/t/
+
+# Package and native build artifacts
+/src/*.o
+/src/*.so
+/src/*.dll
+/src/*.dylib
+/src/*.tmp
+/src/*-*.o.tmp
+/src/RcppExports.cpp
+/src/stanExports_*.cc
+/src/stanExports_*.h
+/src/package-binary
+/src/Makevars
+/R/RcppExports.R
+/R/stanmodels.R
+/R/sysdata.rda
+
+# Stan and model build outputs
+/inst/stan/blrm_exnex
+/inst/stan/blrm_exnex.hpp
+/inst/sbc/blrm_exnex
+/inst/sbc/blrm_exnex.d
+/inst/sbc/blrm_exnex.o
+/inst/sbc/blrm_exnex.hpp
+/inst/sbc/ob2_debug
+/blrm_model
+/_brms-cache/
+
+# Test and coverage outputs
+/tests/testthat/*.Rtest
+/tests/testthat/*.Rtestfast
+/tests/testthat/*.log
+/tests/testthat/fixtures/*.rds
+/tests/vdiffr.Rout.fail
+/covr/
+
+# Rendered documentation and reports
+/inst/doc_html/
+/inst/doc/*.pdf
+/vignettes/*.docx
+/vignettes/*_files/
+
+# Local SBC output
+/inst/sbc/*.log
+/inst/sbc/*.html
+/inst/sbc/*.html.gz
+/inst/sbc/*_files/
+/inst/sbc/term-*/
