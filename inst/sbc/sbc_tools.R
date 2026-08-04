@@ -341,17 +341,20 @@ restore_draw_dims <- function(standata, draw) {
   draw
 }
 
-#' extracts from a given fit the mass matrix, stepsize and a draw from
-#' the typical set. The warmup info from multiple chains is being
-#' averaged together to obtain less noisy estimates.
-learn_warmup_info <- function(standata, stanfit) {
+#' extracts from a given fit the stepsize and a draw from the typical
+#' set. The stepsize from multiple chains is being averaged together to
+#' obtain a less noisy estimate. The HMC mass matrix (inverse metric) is
+#' no longer available now that the blrmfit object stores posterior
+#' draws instead of an rstan stanfit; it was already unused downstream
+#' and is therefore dropped.
+learn_warmup_info <- function(standata, fit) {
   gmean <- function(x) exp(mean(log(x)))
   have_inter <- standata$num_inter > 0
   sampled_params <- c("log_beta_raw", "mu_log_beta", "tau_log_beta_raw", "L_corr_log_beta")
   if (have_inter) {
     sampled_params <- c(sampled_params, "eta_raw", "mu_eta", "tau_eta_raw", "L_corr_eta")
   }
-  posterior_draws <- merge_chains(as_draws_rvars(as.array(stanfit, pars = sampled_params)))
+  posterior_draws <- merge_chains(as_draws_rvars(fit, variable = sampled_params))
   s <- floor(seq.int(1, ndraws(posterior_draws), length = 10))
   draws <- list()
   for (i in s) {
@@ -359,10 +362,9 @@ learn_warmup_info <- function(standata, stanfit) {
     init <- lapply(lapply(init, draws_of), adrop, drop = 1, one.d.array = TRUE)
     draws <- c(draws, list(init))
   }
-  warmup_info <- extract_adaptation_info_stanfit(stanfit)
-  warmup_info$stepsize <- gmean(warmup_info$stepsize)
-  warmup_info$inv_metric <- apply(warmup_info$inv_metric, 1, gmean)
-  c(warmup_info, list(draws = lapply(draws, restore_draw_dims, standata = standata)))
+  np <- nuts_params(fit, inc_warmup = FALSE)
+  stepsize <- gmean(subset(np, Parameter == "stepsize__" & Iteration == 1)$Value)
+  list(stepsize = stepsize, draws = lapply(draws, restore_draw_dims, standata = standata))
 }
 
 #'
@@ -432,13 +434,15 @@ fit_exnex <- function(yrep, draw, scenario, ..., save_fit = FALSE) {
   }
   params <- c(params_comp, params_inter)
 
-  samp_diags_sum <- summarise_draws(as.array(fit$stanfit, pars = params), "rhat", "ess_bulk", "ess_tail") %>%
+  ## blrmfit no longer stores an rstan stanfit; sampling diagnostics and
+  ## posterior draws are read from the stored posterior draws instead.
+  samp_diags_sum <- summarise_draws(as_draws_array(fit, variable = params), "rhat", "ess_bulk", "ess_tail") %>%
     summarize(max_rhat = max(rhat), min_ess_bulk = min(ess_bulk), min_ess_tail = min(ess_tail))
 
-  samp_diags_lp_sum <- summarise_draws(as.array(fit$stanfit, pars = "lp__"), "rhat", "ess_bulk", "ess_tail")
+  samp_diags_lp_sum <- summarise_draws(as_draws_array(fit, variable = "lp__"), "rhat", "ess_bulk", "ess_tail")
 
   assert_that(nsamples(fit) > 1023)
-  suppressMessages(post_thin <- subset_draws(as_draws_rvars(as.array(fit$stanfit, pars = params)), draw = seq(1, nsamples(fit), length = 1024 - 1)))
+  suppressMessages(post_thin <- subset_draws(as_draws_rvars(fit, variable = params), draw = seq(1, nsamples(fit), length = 1024 - 1)))
 
   dim(post_thin$tau_eta)
   lapply(post_thin, dim)
@@ -510,7 +514,7 @@ fit_exnex <- function(yrep, draw, scenario, ..., save_fit = FALSE) {
   }
 
   if (!have_warmup_info) {
-    res <- c(res, learn_warmup_info(fit$standata, fit$stanfit))
+    res <- c(res, learn_warmup_info(fit$standata, fit))
   }
 
   res$stepsize <- exp(mean(log(subset(np, Parameter == "stepsize__" & Iteration == 1)$Value)))
@@ -558,22 +562,3 @@ run_sbc_case <- function(job.id, repl, data_scenario, rng_seed, example_models_c
 #   }
 # }
 
-
-#' extract for a stanfit object from rstan the adaptation information
-#' @param fit cmdstanr fit
-#' @keywords internal
-extract_adaptation_info_stanfit <- function(fit) {
-  info <- sapply(rstan::get_adaptation_info(fit), strsplit, "\n")
-  ex_stepsize <- function(chain_info) {
-    stepsize_line <- which(grepl("Step size", chain_info))
-    as.numeric(strsplit(chain_info[stepsize_line], " = ")[[1]][2])
-  }
-  ex_mass <- function(chain_info) {
-    metric_line <- which(grepl("inverse mass matrix", chain_info)) + 1
-    as.numeric(strsplit(sub("^#", "", chain_info[metric_line]), ", ")[[1]])
-  }
-  stepsize <- sapply(info, ex_stepsize)
-  inv_metric <- do.call(cbind, lapply(info, ex_mass))
-  colnames(inv_metric) <- names(stepsize) <- paste0("chain_", seq_along(info))
-  list(stepsize = stepsize, inv_metric = inv_metric)
-}

@@ -234,6 +234,33 @@ docs/index.html : doc $(SRCS)
 PHONY += pkgdown
 pkgdown: docs/index.html
 
+# Reverse dependency checks.
+# REVDEP_WORKERS: reverse deps checked in parallel (each in its own subprocess).
+# REVDEP_JOBS: C++ compile threads per package build (-jN). Keep
+# REVDEP_WORKERS * REVDEP_JOBS near your core count and watch RAM: Stan/rstan
+# builds are memory hungry.
+REVDEP_WORKERS ?= 6
+REVDEP_JOBS ?= 1
+
+# Local run against the current working tree (includes uncommitted changes).
+# Prerequisites make the source tree buildable/installable by revdepcheck:
+# NAMESPACE + man/*.Rd (via NAMESPACE), compiled Stan src/ and R/sysdata.rda
+# (via BIN_OBJS). The PDF manual/vignettes are intentionally omitted:
+# revdepcheck builds with --no-manual --no-build-vignettes.
+PHONY += revdepcheck
+revdepcheck: NAMESPACE $(BIN_OBJS)
+	$(RCMD) -e 'if (!requireNamespace("revdepcheck", quietly=TRUE)) pak::pak("r-lib/revdepcheck")'
+	MAKEFLAGS="-j$(REVDEP_JOBS)" $(RCMD) -e 'revdepcheck::revdep_check(num_workers = $(REVDEP_WORKERS))'
+
+# Run on GitHub's standard runners via workflow_dispatch. Uses the *pushed* tip
+# of the current branch, NOT your local tree: commit and push before running.
+PHONY += revdepcheck-ci
+revdepcheck-ci:
+	gh workflow run revdepcheck.yaml --ref "$$(git rev-parse --abbrev-ref HEAD)"
+	sleep 5
+	gh run watch --exit-status
+	gh run download -n revdep-results || true
+
 PHONY += dev-install
 dev-install: build/installed/$(RPKG)/DESCRIPTION
 
