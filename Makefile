@@ -136,7 +136,17 @@ R/sysdata.rda: inst/sbc/calibration.rds
 
 inst/doc/$(RPKG).pdf : man/package-doc
 	install -d inst/doc
-	"${R_HOME}/bin/R" CMD Rd2pdf --batch --no-preview --force --output=inst/doc/$(RPKG).pdf .
+	## The package doc uses Rdpack \insertRef macros that expand to
+	## build-stage \Sexpr code needing OncoBayes2 to be discoverable on the
+	## library path (packageDescription()/system.file() lookups). Provide a
+	## throwaway --fake install (no compilation) so Rd2pdf resolves the
+	## references on a clean machine that has no installed OncoBayes2.
+	pdftmplib=$$(mktemp -d); \
+	"${R_HOME}/bin/R" CMD INSTALL --fake --no-test-load --library="$$pdftmplib" . ; \
+	R_LIBS="$$pdftmplib:$$R_LIBS" "${R_HOME}/bin/R" CMD Rd2pdf --batch --no-preview --force --output=inst/doc/$(RPKG).pdf . ; \
+	rd2pdf_status=$$? ; \
+	rm -rf "$$pdftmplib" ; \
+	test $$rd2pdf_status -eq 0
 	"${R_HOME}/bin/R" --vanilla --slave -e 'library(tools); tools::compactPDF("inst/doc/$(RPKG).pdf")'
 
 man/%.Rd : man/package-doc
