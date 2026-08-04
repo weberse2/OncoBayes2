@@ -100,6 +100,7 @@ jobs:
             any::rmarkdown
             any::knitr
             any::here
+            any::broom
             stan-dev/cmdstanr
           needs: check
 
