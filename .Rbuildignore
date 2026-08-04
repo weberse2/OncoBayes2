@@ -28,6 +28,8 @@
 ^tests/testthat/fixtures/.*$
 ^tests/testthat/fixtures-src$
 ^tests/testthat/fixtures-src/.*$
+^design$
+^design/.*$
 ^plot-snaps.tar.gz$
 ^_pkgdown\.yml$
 ^docs$
