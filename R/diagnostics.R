@@ -44,7 +44,12 @@ NULL
 #' @export
 log_posterior.blrmfit <- function(object, ...) {
   .contains_draws(object)
-  bayesplot::log_posterior(object$stanfit, ...)
+  lp <- posterior::as_draws_df(as_draws_array(object, variable = "lp__"))
+  data.frame(
+    Chain = lp$.chain,
+    Iteration = lp$.iteration,
+    Value = lp$lp__
+  )
 }
 
 #' @rdname diagnostic-quantities
@@ -54,7 +59,7 @@ log_posterior.blrmfit <- function(object, ...) {
 #' @export
 nuts_params.blrmfit <- function(object, pars = NULL, ...) {
   .contains_draws(object)
-  bayesplot::nuts_params(object$stanfit, pars = pars, ...)
+  .draws_diag_to_nuts_params(object$draws_diag, pars = pars)
 }
 
 #' @rdname diagnostic-quantities
@@ -64,7 +69,9 @@ nuts_params.blrmfit <- function(object, pars = NULL, ...) {
 #' @export
 rhat.blrmfit <- function(object, pars = NULL, ...) {
   .contains_draws(object)
-  bayesplot::rhat(object$stanfit, pars = pars, ...)
+  draws <- as_draws_array(object, variable = pars)
+  out <- posterior::summarise_draws(draws, rhat = posterior::rhat)
+  setNames(out$rhat, out$variable)
 }
 
 #' @rdname diagnostic-quantities
@@ -74,10 +81,33 @@ rhat.blrmfit <- function(object, pars = NULL, ...) {
 #' @export
 neff_ratio.blrmfit <- function(object, pars = NULL, ...) {
   .contains_draws(object)
-  bayesplot::neff_ratio(object$stanfit, pars = pars, ...)
+  draws <- as_draws_array(object, variable = pars)
+  out <- posterior::summarise_draws(draws, ess_bulk = posterior::ess_bulk)
+  setNames(out$ess_bulk / posterior::ndraws(draws), out$variable)
 }
 
 ## --- internal
+
+.draws_diag_to_nuts_params <- function(draws_diag, pars = NULL) {
+  if (is.null(draws_diag)) {
+    stop("The model does not contain sampler diagnostics.", call. = FALSE)
+  }
+  draws_diag <- posterior::subset_draws(draws_diag, variable = pars)
+  diag_df <- posterior::as_draws_df(draws_diag)
+  variables <- posterior::variables(draws_diag)
+  out <- lapply(variables, function(variable) {
+    data.frame(
+      Chain = diag_df$.chain,
+      Iteration = diag_df$.iteration,
+      Parameter = variable,
+      Value = diag_df[[variable]]
+    )
+  })
+  out <- do.call(rbind, out)
+  out$Parameter <- factor(out$Parameter, levels = variables)
+  rownames(out) <- NULL
+  out
+}
 
 .contains_draws <- function(object) {
   assert_that(

@@ -18,10 +18,10 @@
 #' @aliases nsamples
 #' @export
 nsamples.blrmfit <- function(object, ...) {
-  return(
-    object$stanfit@sim$chains *
-      (object$stanfit@sim$iter - object$stanfit@sim$warmup)
-  )
+  if (is.null(object$draws)) {
+    stop("The model does not contain posterior draws.", call. = FALSE)
+  }
+  posterior::ndraws(object$draws)
 }
 
 #' @method nsamples blrm_trial

@@ -113,6 +113,26 @@
 #' @template stop-example
 NULL
 
+## Plotting relies on the optional (Suggests) packages ggplot2 and scales.
+## Guard the plotting methods so a clear error is raised when they are not
+## installed rather than an obscure failure deep inside the plotting code.
+.assert_ggplot2 <- function() {
+  for (pkg in c("ggplot2", "scales")) {
+    if (!requireNamespace(pkg, quietly = TRUE)) {
+      stop(
+        "Package '",
+        pkg,
+        "' is required for plotting. Please install it with ",
+        "install.packages(\"",
+        pkg,
+        "\").",
+        call. = FALSE
+      )
+    }
+  }
+  invisible(TRUE)
+}
+
 #' @rdname plot_blrm
 #' @export
 plot_toxicity_curve <- function(object, ...) UseMethod("plot_toxicity_curve")
@@ -168,6 +188,7 @@ plot_toxicity_curve.blrmfit <- function(
   grid_length = 100,
   ...
 ) {
+  .assert_ggplot2()
   # make R CMD CHECK happy
   ewoc_lab <- lower <- upper <- middle <- NULL
 
@@ -269,10 +290,10 @@ plot_toxicity_curve.blrmfit <- function(
   scheme <- bayesplot::color_scheme_get()
 
   on.exit(NULL)
-  plot_data <- filter(plot_data, !!sym(x) >= xlim[1], !!sym(x) <= xlim[2])
-  pl <- ggplot(plot_data, aes(x = !!sym(x))) +
-    geom_ribbon(
-      aes(
+  plot_data <- filter(plot_data, !!rlang::sym(x) >= xlim[1], !!rlang::sym(x) <= xlim[2])
+  pl <- ggplot2::ggplot(plot_data, ggplot2::aes(x = !!rlang::sym(x))) +
+    ggplot2::geom_ribbon(
+      ggplot2::aes(
         ymin = lower,
         ymax = upper,
         fill = prob,
@@ -280,8 +301,8 @@ plot_toxicity_curve.blrmfit <- function(
       ),
       alpha = alpha
     ) +
-    geom_line(
-      aes(
+    ggplot2::geom_line(
+      ggplot2::aes(
         y = middle,
         color = "Posterior median",
         linetype = "Posterior median"
@@ -291,14 +312,14 @@ plot_toxicity_curve.blrmfit <- function(
     ) +
     bayesplot::bayesplot_theme_get() + ## note: we want the currently active bayesplot theme (not always the default)
     bayesplot::hline_at(hline_at, color = "gray20", linetype = "dashed") +
-    scale_fill_manual(
+    ggplot2::scale_fill_manual(
       "Central posterior probability",
       values = setNames(
         c(scheme[[2]], scheme[[1]]),
         unique(plot_data$prob)
       )
     ) +
-    scale_x_continuous(
+    ggplot2::scale_x_continuous(
       breaks = function(u) {
         breaks <- scales::extended_breaks(n = 4)
         sort(c(
@@ -311,29 +332,29 @@ plot_toxicity_curve.blrmfit <- function(
       limits = xlim,
       oob = scales::squish
     ) +
-    scale_color_manual(values = setNames(scheme[[5]], "Posterior median")) +
-    scale_linetype_manual(values = setNames(1, "Posterior median")) +
-    guides(
-      color = guide_legend(NULL),
-      linetype = guide_legend(NULL)
+    ggplot2::scale_color_manual(values = setNames(scheme[[5]], "Posterior median")) +
+    ggplot2::scale_linetype_manual(values = setNames(1, "Posterior median")) +
+    ggplot2::guides(
+      color = ggplot2::guide_legend(NULL),
+      linetype = ggplot2::guide_legend(NULL)
     )
 
   if (transform) {
     pl <- pl +
-      scale_y_continuous(
+      ggplot2::scale_y_continuous(
         breaks = sort(c((0:10) / 10, hline_at)),
         minor_breaks = NULL,
         limits = ylim,
         labels = label_percent(accuracy = 1),
         oob = scales::squish
       ) +
-      labs(
+      ggplot2::labs(
         x = x,
         y = "P(DLT)"
       )
   } else if (!transform) {
     pl <- pl +
-      scale_y_continuous(
+      ggplot2::scale_y_continuous(
         breaks = function(u) {
           breaks <- scales::extended_breaks(n = 6)
           round(sort(c(hline_at, breaks(u))), 2)
@@ -342,7 +363,7 @@ plot_toxicity_curve.blrmfit <- function(
         limits = ylim,
         oob = scales::squish
       ) +
-      labs(
+      ggplot2::labs(
         x = x,
         y = "logit(P(DLT))"
       )
@@ -360,7 +381,7 @@ plot_toxicity_curve.blrmfit <- function(
       ),
       facet_args
     )
-    pl <- pl + do.call(facet_wrap, facet_args)
+    pl <- pl + do.call(ggplot2::facet_wrap, facet_args)
   }
 
   pl
@@ -387,6 +408,7 @@ plot_toxicity_curve.blrm_trial <- function(
   ewoc_shading = TRUE,
   ...
 ) {
+  .assert_ggplot2()
   .assert_is_blrm_trial_and_prior_is_set(object)
   drug_info <- summary(object, "drug_info")
   ewoc_lab <- NULL
@@ -454,15 +476,15 @@ plot_toxicity_curve.blrm_trial <- function(
     ylim <- plot_base$scales$get_scales("y")$limits
 
     plot_out <- plot_base +
-      scale_alpha_manual(
+      ggplot2::scale_alpha_manual(
         "EWOC",
         values = c(0, 0.5),
         breaks = c("OK", "Not OK"),
         drop = FALSE
       ) +
-      geom_ribbon(
+      ggplot2::geom_ribbon(
         data = ewoc_data,
-        aes(ymin = ylim[1], ymax = ylim[2], alpha = ewoc_lab),
+        ggplot2::aes(ymin = ylim[1], ymax = ylim[2], alpha = ewoc_lab),
         fill = "black"
       )
   } else {
@@ -487,6 +509,7 @@ plot_toxicity_intervals.blrmfit <- function(
   facet_args = list(),
   ...
 ) {
+  .assert_ggplot2()
   assert_that(
     inherits(object, "blrmfit"),
     msg = "object must be of class blrmfit or blrm_trial."
@@ -565,12 +588,12 @@ plot_toxicity_intervals.blrmfit <- function(
   plot_data$.x <- factor(plot_data[[x]], sort(unique(plot_data[[x]])))
 
   on.exit(NULL)
-  pl <- ggplot(
+  pl <- ggplot2::ggplot(
     data = plot_data,
-    mapping = aes(x = .x, y = value, fill = ewoc_ok)
+    mapping = ggplot2::aes(x = .x, y = value, fill = ewoc_ok)
   ) +
-    geom_col() +
-    scale_fill_manual(
+    ggplot2::geom_col() +
+    ggplot2::scale_fill_manual(
       name = "Escalation\nWith\nOverdose\nControl\nOK?",
       values = setNames(
         c(scheme[[4]], scheme[[3]]),
@@ -579,21 +602,21 @@ plot_toxicity_intervals.blrmfit <- function(
       limits = c("Yes", "No")
     ) +
     bayesplot::bayesplot_theme_get() +
-    theme(panel.border = element_rect(fill = grDevices::rgb(0, 0, 0, 0))) +
-    ylim(0, 1) +
-    geom_hline(
+    ggplot2::theme(panel.border = ggplot2::element_rect(fill = grDevices::rgb(0, 0, 0, 0))) +
+    ggplot2::ylim(0, 1) +
+    ggplot2::geom_hline(
       data = filter(cutoffs, !is.na(cutoff)),
-      mapping = aes(yintercept = cutoff),
+      mapping = ggplot2::aes(yintercept = cutoff),
       linetype = "dashed"
     ) +
-    ylab("Posterior probability mass") +
-    xlab(x)
+    ggplot2::ylab("Posterior probability mass") +
+    ggplot2::xlab(x)
 
   if (!missing(group)) {
     facet_args <- modifyList(
       list(
-        rows = vars(interval),
-        cols = vars(group),
+        rows = ggplot2::vars(interval),
+        cols = ggplot2::vars(group),
         scales = "fixed"
       ),
       facet_args
@@ -601,14 +624,14 @@ plot_toxicity_intervals.blrmfit <- function(
   } else {
     facet_args <- modifyList(
       list(
-        rows = vars(interval),
+        rows = ggplot2::vars(interval),
         cols = NULL,
         scales = "fixed"
       ),
       facet_args
     )
   }
-  pl <- pl + do.call(facet_grid, facet_args)
+  pl <- pl + do.call(ggplot2::facet_grid, facet_args)
 
   pl
 
@@ -628,6 +651,7 @@ plot_toxicity_intervals.blrm_trial <- function(
   ewoc_colors = c("green", "red"),
   ...
 ) {
+  .assert_ggplot2()
   .assert_is_blrm_trial_and_prior_is_set(object)
   drug_info <- summary(object, "drug_info")
 
@@ -678,6 +702,7 @@ plot_toxicity_intervals_stacked.blrmfit <- function(
   facet_args = list(),
   ...
 ) {
+  .assert_ggplot2()
   # make R CMD CHECK happy
   prob <- cutoff <- ewoc_ok <- cprob <- interval <- NULL
 
@@ -918,25 +943,25 @@ plot_toxicity_intervals_stacked.blrmfit <- function(
   }
 
   on.exit(NULL)
-  pl <- ggplot(mapping = aes(x = !!sym(x)), data = stacked) +
-    geom_ribbon(aes(
+  pl <- ggplot2::ggplot(mapping = ggplot2::aes(x = !!rlang::sym(x)), data = stacked) +
+    ggplot2::geom_ribbon(ggplot2::aes(
       ymin = 1 - (cprob - prob),
       ymax = 1 - cprob,
       fill = factor(interval)
     )) +
-    scale_y_continuous(limits = ylim, oob = scales::squish) +
-    scale_fill_brewer(
+    ggplot2::scale_y_continuous(limits = ylim, oob = scales::squish) +
+    ggplot2::scale_fill_brewer(
       legend_lab,
       type = "div",
       palette = "RdYlBu",
       direction = -1,
       drop = FALSE
     ) +
-    ylab(paste0(
+    ggplot2::ylab(paste0(
       ifelse(predictive, "Predictive\n", "Toxicity Interval\n"),
       "Probability"
     )) +
-    scale_x_continuous(
+    ggplot2::scale_x_continuous(
       x,
       breaks = function(u) {
         breaks <- scales::extended_breaks(n = 4)
@@ -958,7 +983,7 @@ plot_toxicity_intervals_stacked.blrmfit <- function(
       ),
       facet_args
     )
-    pl <- pl + do.call(facet_wrap, facet_args)
+    pl <- pl + do.call(ggplot2::facet_wrap, facet_args)
   }
 
   return(pl)
@@ -983,6 +1008,7 @@ plot_toxicity_intervals_stacked.blrm_trial <- function(
   facet_args = list(),
   ...
 ) {
+  .assert_ggplot2()
   .assert_is_blrm_trial_and_prior_is_set(object)
   drug_info <- summary(object, "drug_info")
   ewoc_lab <- NULL
@@ -1079,15 +1105,15 @@ plot_toxicity_intervals_stacked.blrm_trial <- function(
     )
 
     plot_out <- plot_base +
-      scale_alpha_manual(
+      ggplot2::scale_alpha_manual(
         "EWOC",
         values = c(0, 0.5),
         breaks = c("OK", "Not OK"),
         drop = FALSE
       ) +
-      geom_ribbon(
+      ggplot2::geom_ribbon(
         data = ewoc_data,
-        aes(ymin = ylim[1], ymax = ylim[2], alpha = ewoc_lab),
+        ggplot2::aes(ymin = ylim[1], ymax = ylim[2], alpha = ewoc_lab),
         fill = "black"
       )
   } else {

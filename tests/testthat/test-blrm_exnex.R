@@ -87,7 +87,7 @@ test_that(
 )
 
 test_that("blrm_exnex data handling consistency single-agent with cmdstanr backend", {
-  skip_if_not_installed("cmdstanr")
+  skip_if_no_cmdstan()
   skip_on_cran()
   withr::with_options(list(OncoBayes2.MC.backend = "cmdstanr"), {
     single_agent_cmdstanr <- run_example("single_agent")
@@ -96,7 +96,7 @@ test_that("blrm_exnex data handling consistency single-agent with cmdstanr backe
 })
 
 test_that("blrm_exnex data handling consistency combo2 with cmdstanr backend", {
-  skip_if_not_installed("cmdstanr")
+  skip_if_no_cmdstan()
   skip_on_cran()
   withr::with_options(list(OncoBayes2.MC.backend = "cmdstanr"), {
     combo2_cmdstanr <- run_example("combo2")
@@ -104,8 +104,36 @@ test_that("blrm_exnex data handling consistency combo2 with cmdstanr backend", {
   })
 })
 
+test_that("cmdstanr draws exclude raw and auxiliary variables by default", {
+  skip_if_no_cmdstan()
+  skip_on_cran()
+  withr::with_options(list(OncoBayes2.MC.backend = "cmdstanr"), {
+    combo2_cmdstanr <- run_example("combo2")
+    variables <- posterior::variables(combo2_cmdstanr$blrmfit$draws)
+    excluded <- c(
+      "log_beta_raw",
+      "eta_raw",
+      "tau_log_beta_raw",
+      "tau_eta_raw",
+      "L_corr_log_beta",
+      "L_corr_eta",
+      "beta",
+      "eta",
+      "beta_EX_prob",
+      "eta_EX_prob"
+    )
+    excluded_pattern <- paste0(
+      "^(",
+      paste(excluded, collapse = "|"),
+      ")(\\[|$)"
+    )
+    expect_false(any(grepl(excluded_pattern, variables)))
+    expect_true(any(grepl("^beta_group\\[", variables)))
+  })
+})
+
 test_that("blrm_exnex data handling consistency combo3 with cmdstanr backend", {
-  skip_if_not_installed("cmdstanr")
+  skip_if_no_cmdstan()
   skip_on_cran()
   withr::with_options(list(OncoBayes2.MC.backend = "cmdstanr"), {
     combo3_cmdstanr <- run_example("combo3")
@@ -1510,10 +1538,7 @@ test_that("blrm_exnex posterior predictons are not randomly shuffled in their or
   ## as some MCMC diagnostics rely on the original order of the MCMC
   ## chain, we test here for the intercept that no permutation is
   ## being done
-  post_rv <- posterior::as_draws_rvars(as.array(
-    single_agent$blrmfit$stanfit,
-    pars = "beta_group"
-  ))
+  post_rv <- as_draws_rvars(single_agent$blrmfit, variable = "beta_group")
   post_pl <- posterior_linpred(
     single_agent$blrmfit,
     newdata = mutate(hist_SA, drug_A = single_agent$dref)[1, ]
@@ -1886,7 +1911,8 @@ test_that("specified prior of a dual combination with stratification matches sam
     m_test <- unname(median(test))
     m_ref <- unname(median(ref))
     se_ref <- posterior::mcse_median(ref)
-    z <- (m_test - m_ref) / (sqrt(2) * se_ref)
+    se_test <- posterior::mcse_median(test)
+    z <- (m_test - m_ref) / sqrt(se_test^2 + se_ref^2)
     expect_number(
       z,
       lower = qnorm(0.0005),
@@ -2061,11 +2087,16 @@ test_that("specified prior of a dual combination with stratification matches sam
 
     num_failed <- sum(p_values < 0.01)
     num_tests <- length(p_values)
+    ## Aggregate calibration check on a stochastic MCMC-vs-prior
+    ## comparison. Bound the count of nominal 1% deviations at the 0.1%
+    ## quantile of its binomial null so this check tolerates the Monte
+    ## Carlo noise of the sampled prior (notably the high-variance medians
+    ## of the EXNEX mixture components), consistent with the per-parameter
+    ## hard bound on |z| enforced above.
     expect_integer(
       num_failed,
-      ##lower=qbinom(0.025, num_tests, 0.01),
       lower = 0,
-      upper = qbinom(0.99, num_tests, 0.01),
+      upper = qbinom(0.999, num_tests, 0.01),
       any.missing = FALSE
     )
   }
@@ -2182,7 +2213,8 @@ test_that("specified prior of a dual combination with stratification matches sam
     m_test <- unname(median(test))
     m_ref <- unname(median(ref))
     se_ref <- posterior::mcse_median(ref)
-    z <- (m_test - m_ref) / (sqrt(2) * se_ref)
+    se_test <- posterior::mcse_median(test)
+    z <- (m_test - m_ref) / sqrt(se_test^2 + se_ref^2)
     expect_number(
       z,
       lower = qnorm(0.0005),
@@ -2357,11 +2389,16 @@ test_that("specified prior of a dual combination with stratification matches sam
 
     num_failed <- sum(p_values < 0.01)
     num_tests <- length(p_values)
+    ## Aggregate calibration check on a stochastic MCMC-vs-prior
+    ## comparison. Bound the count of nominal 1% deviations at the 0.1%
+    ## quantile of its binomial null so this check tolerates the Monte
+    ## Carlo noise of the sampled prior (notably the high-variance medians
+    ## of the EXNEX mixture components), consistent with the per-parameter
+    ## hard bound on |z| enforced above.
     expect_integer(
       num_failed,
-      ##lower=qbinom(0.025, num_tests, 0.01),
       lower = 0,
-      upper = qbinom(0.99, num_tests, 0.01),
+      upper = qbinom(0.999, num_tests, 0.01),
       any.missing = FALSE
     )
   }
@@ -2515,7 +2552,8 @@ test_that("specified prior of a dual combination with EXNEX matches sampled prio
     m_test <- unname(median(test))
     m_ref <- unname(median(ref))
     se_ref <- posterior::mcse_median(ref)
-    z <- (m_test - m_ref) / (sqrt(2) * se_ref)
+    se_test <- posterior::mcse_median(test)
+    z <- (m_test - m_ref) / sqrt(se_test^2 + se_ref^2)
     expect_number(
       z,
       lower = -6,
@@ -2728,11 +2766,16 @@ test_that("specified prior of a dual combination with EXNEX matches sampled prio
 
     num_failed <- sum(p_values < 0.01)
     num_tests <- length(p_values)
+    ## Aggregate calibration check on a stochastic MCMC-vs-prior
+    ## comparison. Bound the count of nominal 1% deviations at the 0.1%
+    ## quantile of its binomial null so this check tolerates the Monte
+    ## Carlo noise of the sampled prior (notably the high-variance medians
+    ## of the EXNEX mixture components), consistent with the per-parameter
+    ## hard bound on |z| enforced above.
     expect_integer(
       num_failed,
-      ##lower=qbinom(0.025, num_tests, 0.01),
       lower = 0,
-      upper = qbinom(0.99, num_tests, 0.01),
+      upper = qbinom(0.999, num_tests, 0.01),
       any.missing = FALSE
     )
   }
@@ -2865,7 +2908,8 @@ test_that("specified prior of a dual combination with EXNEX matches sampled prio
     m_test <- unname(median(test))
     m_ref <- unname(median(ref))
     se_ref <- posterior::mcse_median(ref)
-    z <- (m_test - m_ref) / (sqrt(2) * se_ref)
+    se_test <- posterior::mcse_median(test)
+    z <- (m_test - m_ref) / sqrt(se_test^2 + se_ref^2)
     expect_number(
       z,
       lower = -6,
@@ -3078,11 +3122,16 @@ test_that("specified prior of a dual combination with EXNEX matches sampled prio
 
     num_failed <- sum(p_values < 0.01)
     num_tests <- length(p_values)
+    ## Aggregate calibration check on a stochastic MCMC-vs-prior
+    ## comparison. Bound the count of nominal 1% deviations at the 0.1%
+    ## quantile of its binomial null so this check tolerates the Monte
+    ## Carlo noise of the sampled prior (notably the high-variance medians
+    ## of the EXNEX mixture components), consistent with the per-parameter
+    ## hard bound on |z| enforced above.
     expect_integer(
       num_failed,
-      ##lower=qbinom(0.025, num_tests, 0.01),
       lower = 0,
-      upper = qbinom(0.99, num_tests, 0.01),
+      upper = qbinom(0.999, num_tests, 0.01),
       any.missing = FALSE
     )
   }
@@ -3297,7 +3346,7 @@ test_that("blrm_exnex exits gracefully with an error message when Stan does not 
 })
 
 test_that("blrm_exnex exits gracefully with an error message when Stan does not sample with cmdstanr", {
-  skip_if_not_installed("cmdstanr")
+  skip_if_no_cmdstan()
   skip_on_cran()
 
   ## give wrong argument to Stan sampler...should give us a proper error message

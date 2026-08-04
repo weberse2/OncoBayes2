@@ -38,12 +38,9 @@ pp_data <- function(object, newdata, draws, re.form) {
   stratum_idx <- as.integer(unclass(strata_group_fct$strata_fct))
 
   if (has_inter) {
-    post_rv <- as_draws_rvars(as.array(
-      object$stanfit,
-      pars = c("beta_group", "eta_group")
-    ))
+    post_rv <- as_draws_rvars(object, variable = c("beta_group", "eta_group"))
   } else {
-    post_rv <- as_draws_rvars(as.array(object$stanfit, pars = c("beta_group")))
+    post_rv <- as_draws_rvars(object, variable = "beta_group")
     post_rv$eta_group <- rvar(0)
   }
 

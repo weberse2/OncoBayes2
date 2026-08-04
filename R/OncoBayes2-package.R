@@ -45,6 +45,7 @@
 #' @importFrom matrixStats logSumExp
 #' @importFrom stats delete.response ftable median model.frame model.matrix model.response quantile rbinom sd terms model.matrix.default setNames update update.default .getXlevels as.formula na.fail qlogis dbinom uniroot qnorm
 #' @importFrom lifecycle deprecated deprecate_warn deprecate_stop
+#' @importFrom Rdpack reprompt
 #' @import assertthat
 #' @import RBesT
 #' @import checkmate
@@ -52,11 +53,9 @@
 #' @import rstantools
 #' @import dplyr
 #' @import tidyr
-#' @import ggplot2
 #' @importFrom tibble as_tibble
 #' @importFrom tidyselect vars_select_helpers vars_select
 #' @importFrom rlang env_bury .data
-#' @importFrom scales number_format extended_breaks
 #' @import abind
 #' @export posterior_linpred posterior_predict posterior_interval
 #' @export predictive_interval prior_summary nsamples

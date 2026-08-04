@@ -217,14 +217,20 @@ test_that("as_draws and friends have resonable outputs", {
   expect_true(nvariables(draws) > 0)
   expect_equal(ndraws(draws), nsamples(combo2$blrmfit))
 
-  combo2_full <- with(combo2, update(blrmfit, save_warmup = TRUE))
+  n_saved_samples <- 10L
+  combo2_full <- withr::with_options(
+    list(
+      OncoBayes2.MC.iter = n_saved_samples,
+      OncoBayes2.MC.warmup = 2L
+    ),
+    with(combo2, update(blrmfit, save_warmup = TRUE))
+  )
   draws <- as_draws_rvars(combo2_full, inc_warmup = TRUE)
   expect_s3_class(draws, "draws_rvars")
   expect_true(nvariables(draws) > 0)
-  n_saved_samples <- combo2_full$stanfit@sim$n_save
 
   expect_equal(ndraws(draws), n_saved_samples)
-  expect_equal(ndraws(draws), getOption("OncoBayes2.MC.iter"))
+  expect_null(combo2_full$stanfit)
 })
 
 test_that("as_draws_rvars exports dimension labels", {
